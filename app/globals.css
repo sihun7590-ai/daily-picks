@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* 색은 여기서만 정의한다. 한국 시세 관례대로 상승은 빨강, 하락은 파랑이다. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f0f2f5;
+  --ink: #15181e;
+  --ink-2: #4a5160;
+  --ink-3: #6f7788;
+  --line: #e2e5ea;
+  --up: #d92d20;
+  --down: #1d64d8;
+  --accent: #15181e;
+  --warn-bg: #fff6e6;
+  --warn-ink: #8a5300;
+  --good-bg: #e8f6ee;
+  --good-ink: #116a3b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --surface: #171a20;
+    --surface-2: #20242c;
+    --ink: #eef0f3;
+    --ink-2: #b3b9c5;
+    --ink-3: #8b93a2;
+    --line: #2a2f39;
+    --up: #ff6b5e;
+    --down: #6aa0ff;
+    --accent: #eef0f3;
+    --warn-bg: #33270f;
+    --warn-ink: #f0c070;
+    --good-bg: #12301f;
+    --good-ink: #7fd8a4;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-accent: var(--accent);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-ink: var(--warn-ink);
+  --color-good-bg: var(--good-bg);
+  --color-good-ink: var(--good-ink);
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  word-break: keep-all;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}

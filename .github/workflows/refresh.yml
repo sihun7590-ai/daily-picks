@@ -1,0 +1,50 @@
+# 평일 하루 한 번 후보를 다시 고르고 결과를 커밋한다. 커밋이 곧 Vercel 재배포다.
+name: 후보 갱신
+
+on:
+  schedule:
+    # 07:30 UTC = 16:30 KST. 코스피 마감(15:30) 뒤라 그날 종가가 확정돼 있고,
+    # S&P 500은 전날 밤 종가가 확정돼 있다. 한 번으로 두 시장의 "다음 장" 후보가 다 나온다.
+    - cron: "30 7 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # 규칙이 깨진 채로 후보를 내보내지 않는다
+      - run: npm test
+
+      # 수집 실패가 10%를 넘으면 스크립트가 파일을 안 쓰고 실패로 끝난다. GitHub가 메일로 알려 준다
+      - run: npm run refresh
+
+      - name: 결과 커밋
+        run: |
+          git add data/
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋하지 않습니다."
+            exit 0
+          fi
+          # Vercel Hobby는 비공개 저장소에서 계정 주인이 아닌 작성자의 커밋을 배포하지 않는다.
+          # github-actions[bot]으로 커밋하면 빌드가 Blocked로 멈추므로 주인의 noreply 주소를 쓴다.
+          git config user.name "sihun7590-ai"
+          git config user.email "302002387+sihun7590-ai@users.noreply.github.com"
+          git commit -m "후보 갱신 $(TZ=Asia/Seoul date +%F)"
+          git push

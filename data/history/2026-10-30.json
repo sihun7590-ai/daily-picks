@@ -1,0 +1,141 @@
+{
+ "rulesVersion": 1,
+ "generatedAt": "2026-10-30T11:37:21.389Z",
+ "kospi": {
+  "asOf": "2026-10-30",
+  "regimeUp": false,
+  "funnel": {
+   "trend": 233,
+   "illiquid": 559,
+   "leg_broken": 1,
+   "stale": 25,
+   "no_trigger": 4,
+   "no_leg": 4,
+   "risk": 1,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_forming",
+    "trigger": 99000,
+    "stop": 94200
+   },
+   {
+    "code": "028050",
+    "name": "삼성E&A",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "011200",
+    "name": "HMM",
+    "id": "pullback_weak",
+    "trigger": 24250,
+    "stop": 21750
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-10-29",
+  "regimeUp": true,
+  "funnel": {
+   "no_leg": 124,
+   "trend": 345,
+   "leg_broken": 9,
+   "no_trigger": 19,
+   "illiquid": 3,
+   "history": 3
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "PG",
+    "name": "Procter & Gamble",
+    "id": "pullback_forming",
+    "trigger": 161.6,
+    "stop": 157.4
+   },
+   {
+    "code": "IT",
+    "name": "Gartner",
+    "id": "pullback_forming",
+    "trigger": 228.6,
+    "stop": 214.85
+   },
+   {
+    "code": "EL",
+    "name": "Estée Lauder Companies (The)",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "CRL",
+    "name": "Charles River Laboratories",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "RVTY",
+    "name": "Revvity",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "WAT",
+    "name": "Waters Corporation",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "AMGN",
+    "name": "Amgen",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "NDAQ",
+    "name": "Nasdaq, Inc.",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "TEL",
+    "name": "TE Connectivity",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}
