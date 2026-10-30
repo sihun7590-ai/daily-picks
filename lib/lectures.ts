@@ -19,6 +19,8 @@ export const LECTURES = {
   b37: L("초급 37화", "매도 원칙", "-4B0YjzIKxM"),
   b38: L("초급 38화", "거래량과 심리", "cr1Imugb2gg"),
   b39: L("초급 39화", "거래량 타이밍", "INJHrq759bQ"),
+  m2: L("중급 2화", "반등 시 손절", "un0gzkLM5e4"),
+  m3: L("중급 3화", "스타일·단가별 손절", "43pr6Rb3voA"),
   m4: L("중급 4화", "돌파 매매 3형제", "kDKJVo38U7g"),
   m5: L("중급 5화", "눌림목 매매 정리", "PqWOU4JCIlw"),
   m6: L("중급 6화", "돌파를 하면 안 될 때", "rv2AcFglaVU"),
@@ -29,7 +31,10 @@ export const LECTURES = {
   m19: L("중급 19화", "손절선 정하기", "dmMSaI7RgN0"),
   m20: L("중급 20화", "손절이 어려운 이유", "8cO5s54qy1Q"),
   m21: L("중급 21화", "손절선 옮기기", "OuZOe-SdZa4"),
+  m22: L("중급 22화", "추매 시 손절", "N_JTpzqvYfE"),
 } as const;
+
+export type LectureKey = keyof typeof LECTURES;
 
 export const SETUP_LABEL: Record<SetupId, string> = {
   second_base: "2차 기준봉",

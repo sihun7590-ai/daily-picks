@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { buyPlan } from "@/lib/buy-plan";
 import type { Holding, HoldingResult } from "@/lib/holdings";
-import { SETUP_LABEL, WATCH_LABEL } from "@/lib/lectures";
+import { LECTURES, lectureUrl, SETUP_LABEL, WATCH_LABEL, type LectureKey } from "@/lib/lectures";
 import { fmtPct, fmtPrice } from "@/lib/picks";
 import type { MarketId, Stage } from "@/lib/types";
 import { Change, Chip, Stat } from "./Chips";
@@ -161,6 +162,30 @@ function AddForm({ names, busy, onAdd }: { names: NameItem[]; busy: boolean; onA
   );
 }
 
+/** 가격 하나와 그 가격인 이유 */
+function PlanBlock({ label, value, valueClass, sub, flag, why, refs }: { label: string; value: string; valueClass: string; sub?: string; flag?: string | null; why: string; refs: LectureKey[] }) {
+  return (
+    <div className="min-w-0">
+      <Stat label={label} value={value} valueClass={valueClass} sub={sub} />
+      {flag ? (
+        <div className="mt-1">
+          <Chip tone="warn">{flag}</Chip>
+        </div>
+      ) : null}
+      <p className="mt-1 text-xs leading-relaxed text-ink-2">
+        {why}{" "}
+        <span className="inline-flex flex-wrap gap-x-2">
+          {refs.map((k) => (
+            <a key={k} href={lectureUrl(LECTURES[k])} target="_blank" rel="noreferrer" className="whitespace-nowrap text-ink-3 underline underline-offset-2 hover:text-ink">
+              {LECTURES[k].label}
+            </a>
+          ))}
+        </span>
+      </p>
+    </div>
+  );
+}
+
 function HoldingBody({
   h,
   saved,
@@ -179,14 +204,19 @@ function HoldingBody({
   const pnl = buyPrice ? (h.close / buyPrice - 1) * 100 : null;
   const a = h.analysis;
   const { entry, stop } = h.plan;
+  const mine = useMemo(() => (buyPrice ? buyPlan(h.plan, h.close, buyPrice, h.market) : null), [h.plan, h.close, h.market, buyPrice]);
+  const myStop = mine?.stop.price ?? null;
   const lines = useMemo<PriceLine[]>(
     () => [
       ...(buyPrice ? [{ price: buyPrice, title: "매수가", color: "ink" as const }] : []),
       ...(entry != null ? [{ price: entry, title: "진입 참고", color: "up" as const }] : []),
       ...(stop != null ? [{ price: stop, title: "손절 참고", color: "down" as const }] : []),
+      ...(myStop != null && myStop !== stop ? [{ price: myStop, title: "매수가 기준 손절", color: "down" as const }] : []),
     ],
-    [buyPrice, entry, stop],
+    [buyPrice, entry, stop, myStop],
   );
+  const vsClose = (p: number) => `종가 대비 ${fmtPct((p / h.close - 1) * 100, true)}`;
+  const vsBuy = (p: number) => `매수가 대비 ${fmtPct((p / (buyPrice ?? p) - 1) * 100, true)}`;
   const markers = useMemo<Marker[]>(() => (h.baseDate ? [{ date: h.baseDate, text: "기준봉" }] : []), [h.baseDate]);
 
   const listed = item?.exchange === "코스피" || item?.exchange === "S&P 500";
@@ -248,24 +278,62 @@ function HoldingBody({
             {a.setup ? `신호: ${SETUP_LABEL[a.setup]}` : a.watch ? WATCH_LABEL[a.watch] : STAGE_LABEL[a.stage]}
           </Chip>
         </div>
-        {a.note ? <p className="mt-1.5 text-xs leading-relaxed text-ink-2">{a.note}</p> : null}
+        {/* 다른 경우는 아래 진입 참고가의 이유에 같은 내용이 있다 */}
+        {a.watch === "pullback_weak" && a.note ? <p className="mt-1.5 text-xs leading-relaxed text-ink-2">{a.note}</p> : null}
         {scope ? <p className="mt-1.5 text-xs leading-relaxed text-ink-3">{scope}</p> : null}
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-3 border-b border-line pb-3">
-        <Stat
+      <div className="mt-3 grid gap-4 sm:grid-cols-2">
+        <PlanBlock
           label="진입 참고가"
           value={entry != null ? fmtPrice(h.market, entry) : "규칙상 자리 없음"}
           valueClass={entry != null ? "text-up" : "text-ink-3 text-sm"}
-          sub={entry != null ? `${h.plan.entryBasis} (종가 대비 ${fmtPct((entry / h.close - 1) * 100, true)})` : undefined}
+          sub={entry != null ? `${h.plan.entryBasis} · ${vsClose(entry)}` : undefined}
+          why={h.plan.entryWhy}
+          refs={h.plan.entryRefs}
         />
-        <Stat
+        <PlanBlock
           label="손절 참고선"
           value={stop != null ? fmtPrice(h.market, stop) : "규칙으로 정할 수 없음"}
           valueClass={stop != null ? "text-down" : "text-ink-3 text-sm"}
-          sub={stop != null ? `${h.plan.stopBasis}${h.plan.stopTested ? "" : "(미검증)"} (종가 대비 ${fmtPct((stop / h.close - 1) * 100, true)})` : undefined}
+          sub={stop != null ? `${h.plan.stopBasis}${h.plan.stopTested ? "" : "(미검증)"} · ${vsClose(stop)}` : undefined}
+          why={h.plan.stopWhy}
+          refs={h.plan.stopRefs}
         />
       </div>
+
+      <div className="mt-3 rounded-lg border border-line p-3">
+        <div className="text-xs font-medium text-ink-2">내 매수가 기준 (미검증)</div>
+        {mine && buyPrice ? (
+          <>
+            <div className="mt-2 grid gap-4 sm:grid-cols-2">
+              <PlanBlock
+                label="매수가 기준 진입"
+                value={mine.entry.price != null ? fmtPrice(h.market, mine.entry.price) : "규칙상 자리 없음"}
+                valueClass={mine.entry.price != null ? "text-up" : "text-ink-3 text-sm"}
+                sub={mine.entry.price != null ? `${mine.entry.basis} · ${vsBuy(mine.entry.price)}` : undefined}
+                flag={mine.entry.flag}
+                why={mine.entry.why}
+                refs={mine.entry.refs}
+              />
+              <PlanBlock
+                label="매수가 기준 손절"
+                value={mine.stop.price != null ? fmtPrice(h.market, mine.stop.price) : "규칙으로 정할 수 없음"}
+                valueClass={mine.stop.price != null ? "text-down" : "text-ink-3 text-sm"}
+                sub={mine.stop.price != null ? `${mine.stop.basis} · ${vsBuy(mine.stop.price)}` : undefined}
+                flag={mine.stop.flag}
+                why={mine.stop.why}
+                refs={mine.stop.refs}
+              />
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-ink-3">입력한 매수가에 강의 기준을 계산기처럼 적용한 값입니다. 여러 번 나눠 샀다면 강의는 평단이 아니라 매수분별로 보라고 합니다.</p>
+          </>
+        ) : (
+          <p className="mt-1 text-xs leading-relaxed text-ink-3">위 칸에 매수가를 넣으면 매수가에 강의 기준을 적용한 진입·손절 값과 그 이유가 나옵니다.</p>
+        )}
+      </div>
+
+      <div className="mt-3 border-b border-line" />
 
       <dl className="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
         {h.checks.map((c) => (

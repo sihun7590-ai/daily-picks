@@ -1,3 +1,5 @@
+import type { LectureKey } from "./lectures";
+
 export type Bar = {
   /** 거래소 현지 기준 날짜 YYYY-MM-DD */
   t: string;
@@ -89,6 +91,9 @@ export type Watch = {
   id: WatchId;
   /** 이 가격을 거래량과 함께 넘으면 신호가 된다. 1차 기준봉은 아직 트리거가 없다. */
   trigger: number | null;
+  triggerBasis: string | null;
+  /** 수렴 구간의 봉 수. 수렴이 없으면 null */
+  boxBars: number | null;
   stop: number | null;
   stopBasis: string | null;
   riskPct: number | null;
@@ -108,14 +113,25 @@ export type Check = {
   detail: string;
 };
 
+/** 차트에서 찾은 지지 가격. 매수가 기준 계산의 재료다 */
+export type PlanLevel = { price: number; basis: string; date: string | null };
+
 /** 규칙을 차트에 기계적으로 적용한 진입·손절 참고값. 규칙이 정한 자리가 없으면 null */
 export type RulePlan = {
   entry: number | null;
   entryBasis: string | null;
+  /** 이 가격인 이유, 또는 가격이 없는 이유 */
+  entryWhy: string;
+  entryRefs: LectureKey[];
   stop: number | null;
   stopBasis: string | null;
   /** 과거 검증에 쓴 손절선인가. false면 강의 기준을 옮긴 대체값이다 */
   stopTested: boolean;
+  stopWhy: string;
+  stopRefs: LectureKey[];
+  /** 높은 가격부터 */
+  supports: PlanLevel[];
+  maxRiskPct: number;
 };
 
 /** 깔때기 어느 단계에서 탈락했는지. 기준이 너무 빡빡한지 판단하는 근거로 쓴다. */

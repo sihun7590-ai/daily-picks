@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { buyPlan } from "../lib/buy-plan";
 import { buildHolding, isWrongSuffix, symbolCandidates } from "../lib/holdings";
+import { LECTURES } from "../lib/lectures";
 import { analyze, positionChecks, positionPlan, prepare } from "../lib/rules";
-import type { Bar } from "../lib/types";
+import type { Bar, RulePlan } from "../lib/types";
 
 function path(n: number, seed = 7): Bar[] {
   let s = seed;
@@ -75,6 +77,86 @@ test("진입·손절 참고값: 미래 참조가 없고, 손절은 언제나 종
   }
   assert.ok(withEntry > 0, "진입가가 한 번도 없으면 검사가 무의미하다");
   assert.ok(seen.has("전저점") && seen.has("허리 이탈"), [...seen].join(","));
+});
+
+test("모든 참고값에 읽을 수 있는 이유와 실제 강의 링크가 붙는다", () => {
+  const bars = path(600, 23);
+  const full = prepare(bars);
+  const seen = new Set<string>();
+  for (let t = 3; t < bars.length; t++) {
+    const plan = positionPlan(full, t, analyze(full, t));
+    for (const text of [plan.entryWhy, plan.stopWhy]) {
+      assert.ok(text.length > 10, `t=${t} 이유가 비어 있다`);
+      assert.doesNotMatch(text, /undefined|NaN|null/, `t=${t} ${text}`);
+    }
+    for (const k of [...plan.entryRefs, ...plan.stopRefs]) assert.ok(LECTURES[k], `없는 강의 ${k}`);
+    if (plan.entry != null) seen.add(plan.entryBasis ?? "");
+    for (let i = 1; i < plan.supports.length; i++) assert.ok(plan.supports[i - 1].price >= plan.supports[i].price, "지지 가격은 높은 순이다");
+  }
+  assert.ok(seen.size > 0);
+  assert.ok(![...seen].includes(""), "진입가에는 근거가 붙는다");
+});
+
+const planFor = (over: Partial<RulePlan>): RulePlan => ({
+  entry: null,
+  entryBasis: null,
+  entryWhy: "x",
+  entryRefs: [],
+  stop: null,
+  stopBasis: null,
+  stopTested: false,
+  stopWhy: "x",
+  stopRefs: [],
+  supports: [],
+  maxRiskPct: 12,
+  ...over,
+});
+const supports = [
+  { price: 110, basis: "전저점", date: "2026-09-01" },
+  { price: 95, basis: "허리", date: "2026-08-01" },
+  { price: 80, basis: "전저점", date: "2026-07-01" },
+];
+
+test("매수가 기준 손절: 매수가 아래 가장 가까운 기준가를 고른다", () => {
+  const { stop } = buyPlan(planFor({ supports }), 105, 100, "sp500");
+  assert.equal(stop.price, 95);
+  assert.equal(stop.basis, "허리");
+  assert.equal(stop.flag, null);
+  assert.ok(stop.why.includes("2026-08-01"));
+});
+
+test("매수가 기준 손절: 종가가 이미 내려왔으면 이탈로 표시하고 다음 기준가를 알려 준다", () => {
+  const { stop } = buyPlan(planFor({ supports }), 90, 100, "kospi");
+  assert.equal(stop.price, 95);
+  assert.equal(stop.flag, "이미 이탈");
+  assert.ok(stop.why.includes("80원"), stop.why);
+});
+
+test("매수가 기준 손절: 가격이 올라 규칙 손절선이 매수가 위면 그대로 쓴다", () => {
+  const { stop } = buyPlan(planFor({ supports, stop: 110, stopBasis: "전저점" }), 130, 100, "sp500");
+  assert.equal(stop.price, 110);
+  assert.equal(stop.flag, null);
+  assert.ok(stop.why.includes("+10.0%"), stop.why);
+});
+
+test("매수가 기준 손절: 기준가가 없으면 손절 폭 상한으로, 폭이 크면 표시한다", () => {
+  const none = buyPlan(planFor({}), 100, 100, "kospi").stop;
+  assert.equal(none.price, 88);
+  assert.equal(none.flag, null);
+  assert.equal(buyPlan(planFor({}), 80, 100, "kospi").stop.flag, "이미 이탈");
+  const wide = buyPlan(planFor({ supports: [{ price: 80, basis: "전저점", date: "2026-07-01" }] }), 90, 100, "sp500").stop;
+  assert.equal(wide.price, 80);
+  assert.equal(wide.flag, "손절 폭 과다");
+});
+
+test("매수가 기준 진입: 위는 불타기, 아래는 물타기로 표시하고 자리가 없으면 지어내지 않는다", () => {
+  const above = buyPlan(planFor({ entry: 110, entryBasis: "전고점", stop: 104.5 }), 100, 100, "sp500").entry;
+  assert.equal(above.price, 110);
+  assert.equal(above.flag, null);
+  assert.ok(above.why.includes("불타기") && above.why.includes("5.0%"), above.why);
+  const below = buyPlan(planFor({ entry: 90, entryBasis: "수렴 상단" }), 85, 100, "sp500").entry;
+  assert.equal(below.flag, "물타기 자리");
+  assert.equal(buyPlan(planFor({}), 100, 100, "sp500").entry.price, null);
 });
 
 test("규칙이 자리를 정하지 않으면 진입 참고가를 지어내지 않는다", () => {

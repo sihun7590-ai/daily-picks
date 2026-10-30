@@ -80,6 +80,7 @@ export function buildHolding(symbol: string, info: ChartInfo): Holding | "unsupp
       ...plan,
       entry: plan.entry == null ? null : roundPrice(market, plan.entry),
       stop: plan.stop == null ? null : roundPrice(market, plan.stop),
+      supports: plan.supports.map((l) => ({ ...l, price: roundPrice(market, l.price) })),
     },
     checks,
     levels: levels ? roundLevels(market, levels) : null,

@@ -8,7 +8,8 @@
  * 이 파일은 순수 함수만 둔다. fetch·파일 접근 금지.
  * 모든 판단은 t 시점까지의 봉만 본다 (test/rules.test.ts가 미래 참조를 검사한다).
  */
-import type { Analysis, Bar, BaseInfo, Check, Levels, RulePlan, ScoreItem, SetupId, Signal, Watch } from "./types";
+import type { LectureKey } from "./lectures";
+import type { Analysis, Bar, BaseInfo, Check, Levels, PlanLevel, RulePlan, ScoreItem, SetupId, Signal, Watch } from "./types";
 
 export const RULES_VERSION = 2;
 /** 시장 평균이 60일 평균 아래인 날은 신호를 내지 않는다. 2022~2024 검증에서 손실을 크게 줄였다. */
@@ -834,34 +835,106 @@ export function positionChecks(ctx: Ctx, t: number): { checks: Check[]; levels: 
   return { checks, levels: leg ? levelsOf(leg, null) : null, baseDate: leg?.info.date ?? null };
 }
 
-/** 종가 아래에서 가장 가까운 스윙 저점 */
-function swingLowBelow(bars: Bar[], t: number, below: number): number | null {
-  let best: number | null = null;
-  for (let i = t - 3; i >= Math.max(3, t - 120); i--) {
+/** 앞뒤 3봉보다 낮은 스윙 저점들. 높은 가격부터 */
+function swingLows(bars: Bar[], t: number): { price: number; date: string }[] {
+  const out: { price: number; date: string }[] = [];
+  for (let i = t - 3; i >= Math.max(3, t - 240); i--) {
     const low = bars[i].l;
-    if (low >= below || (best != null && low <= best)) continue;
     let pivot = true;
     for (let k = i - 3; k <= i + 3; k++) if (k !== i && bars[k].l < low) pivot = false;
-    if (pivot) best = low;
+    if (pivot) out.push({ price: low, date: bars[i].t });
   }
-  return best;
+  return out.sort((a, b) => b.price - a.price);
+}
+
+type Why = { why: string; refs: LectureKey[] };
+
+const pct100 = (x: number | null) => Math.round((x ?? 0) * 100);
+const SIGNAL_WHY: Record<SetupId, (s: Signal) => Why> = {
+  second_base: (s) => ({ why: `고점 뒤 ${s.barsSincePeak}봉 쉬고 전고점을 거래량 ${s.volRatio.toFixed(1)}배로 넘은 종가입니다.`, refs: ["m4", "m6"] }),
+  af: (s) => ({ why: `허리를 깼다 복귀한 뒤 작은 봉으로 수렴하다 거래량 ${s.volRatio.toFixed(1)}배로 돌파한 종가입니다.`, refs: ["b26", "m10"] }),
+  high_tight: (s) => ({ why: `마디의 ${pct100(s.depth)}%만 내주고 쉬다가 거래량 ${s.volRatio.toFixed(1)}배로 돌파한 종가입니다.`, refs: ["b17", "b39"] }),
+  pullback_breakout: (s) => ({ why: `눌리는 동안 거래가 상승 구간의 ${pct100(s.dryUp)}%로 줄었고, 수렴 상단을 거래량 ${s.volRatio.toFixed(1)}배로 돌파한 종가입니다.`, refs: ["b17", "m5"] }),
+  pullback_confirm: (s) => ({ why: `눌리는 동안 거래가 상승 구간의 ${pct100(s.dryUp)}%로 마른 뒤, 지지 근처에서 평균의 ${s.volRatio.toFixed(1)}배 거래량으로 나온 첫 양봉의 종가입니다.`, refs: ["b39", "m5"] }),
+  trap_reclaim: (s) => ({ why: `여러 번 지지받은 저점을 깼다가 거래량 ${s.volRatio.toFixed(1)}배 양봉으로 복귀한 종가입니다.`, refs: ["m16", "m7"] }),
+};
+
+const STOP_WHY: Record<string, Why> = {
+  "수렴 하단": { why: "최근 수렴 구간의 저점입니다. 수렴 후 돌파의 손절은 수렴 하단에 둡니다. 여기를 깨면 돌파가 실패한 것으로 봅니다.", refs: ["m3", "m4"] },
+  "눌림 저점": { why: "이번 눌림에서 가장 낮은 가격입니다. 수렴이 없는 눌림의 손절은 눌림 바닥에 둡니다.", refs: ["b39", "m3"] },
+  "이탈 저점": { why: "지지선을 깨고 내려갔던 저점입니다. 여기를 다시 깨면 복귀가 실패한 것으로 봅니다.", refs: ["m16"] },
+};
+
+function entryWhy(a: Analysis): Why {
+  if (a.signal) {
+    const w = SIGNAL_WHY[a.signal.setup](a.signal);
+    return { ...w, why: `${w.why} 규칙은 다음 장 시가에 진입합니다.` };
+  }
+  const w = a.watch;
+  if (w?.trigger != null) {
+    return w.triggerBasis === "수렴 상단"
+      ? {
+          why: `최근 ${w.boxBars}봉 수렴 구간의 고점입니다. 눌리는 동안 거래가 상승 구간의 ${pct100(w.dryUp)}%였고, 이 가격을 20일 평균 ${P.trigger.breakoutVol}배 이상 거래량으로 종가 돌파하면 신호가 됩니다.`,
+          refs: ["b17", "m5"],
+        }
+      : { why: `${w.base.date} 기준봉에서 시작한 마디의 고점(전고점)입니다. 이 가격을 20일 평균 ${P.trigger.peakBreakoutVol}배 이상 거래량으로 종가 돌파하면 2차 기준봉 신호가 됩니다.`, refs: ["b11", "m4"] };
+  }
+  if (w?.id === "rising") return { why: "조정 없이 오르는 중입니다. 규칙은 따라 사지 않고 첫 눌림을 기다립니다.", refs: ["m6", "b17"] };
+  if (w?.id === "first_base") return { why: "오늘 나온 1차 기준봉은 속임수가 많아 규칙은 눌림을 기다립니다.", refs: ["b11"] };
+  if (w) return { why: `돌파 가격을 정할 수 없습니다. ${w.note}`, refs: ["m5"] };
+  if (a.stage === "history") return { why: "거래 일수가 부족해 이평선과 기준 마디를 판단할 수 없습니다.", refs: ["b36"] };
+  if (a.stage === "trend") return { why: `추세 조건에서 탈락했습니다(${a.note}). 규칙은 상승 추세에서만 진입합니다.`, refs: ["m13", "b28"] };
+  if (a.stage === "no_leg") return { why: "최근 60봉에 기준봉이 없습니다. 규칙은 거래량이 터진 기준봉이 나온 뒤에만 진입합니다.", refs: ["b11", "b36"] };
+  if (a.stage === "leg_broken") return { why: `기준 마디가 망가졌습니다(${a.note}).`, refs: ["b12", "m7"] };
+  if (a.stage === "risk") return { why: `오늘 신호가 규칙에서 보류됐습니다(${a.note}).`, refs: ["b10", "m6"] };
+  return { why: "기준 마디는 있지만 종가가 허리 아래이거나 오늘 진입 신호가 없습니다.", refs: ["b36"] };
 }
 
 /**
- * 내 종목 화면의 진입·손절 참고값. 규칙을 차트에 기계적으로 적용한 값이고 사용자의 매수가는 보지 않는다.
+ * 내 종목 화면의 진입·손절 참고값과 그 이유. 규칙을 차트에 기계적으로 적용한 값이고 사용자의 매수가는 보지 않는다.
  * 진입은 규칙이 정한 자리가 있을 때만 준다. 손절은 신호·눌림의 손절선이 있으면 그것을 쓰고,
  * 없으면 강의 기준(허리 이탈 초급 12화, 전저점 중급 3화)으로 대신한다. 이 대체값은 과거 검증을 거치지 않았다.
  */
 export function positionPlan(ctx: Ctx, t: number, a: Analysis): RulePlan {
   const c = ctx.bars[t].c;
-  if (a.signal) return { entry: a.signal.entry, entryBasis: "오늘 신호가 나온 가격(오늘 종가)", stop: a.signal.stop, stopBasis: a.signal.stopBasis, stopTested: true };
-  const entry = a.watch?.trigger ?? null;
-  const entryBasis = entry != null ? "이 가격을 거래량과 함께 넘으면 신호" : null;
-  if (a.watch?.stop != null) return { entry, entryBasis, stop: a.watch.stop, stopBasis: a.watch.stopBasis, stopTested: true };
+  const lows = swingLows(ctx.bars, t);
   const leg = legAsOf(ctx, t);
-  if (leg && c >= leg.waist) return { entry, entryBasis, stop: leg.waist, stopBasis: "허리 이탈", stopTested: false };
-  const low = swingLowBelow(ctx.bars, t, c);
-  return { entry, entryBasis, stop: low, stopBasis: low != null ? "전저점" : null, stopTested: false };
+  const entry = a.signal?.entry ?? a.watch?.trigger ?? null;
+  const entryBasis = a.signal ? "오늘 신호" : a.watch?.trigger != null ? a.watch.triggerBasis : null;
+  const { why: eWhy, refs: eRefs } = entryWhy(a);
+
+  const ruleStop = a.signal ? { price: a.signal.stop, basis: a.signal.stopBasis } : a.watch?.stop != null ? { price: a.watch.stop, basis: a.watch.stopBasis ?? "" } : null;
+  const supports: PlanLevel[] = lows.map((l) => ({ price: l.price, basis: "전저점", date: l.date }));
+  if (leg) supports.push({ price: leg.waist, basis: "허리", date: leg.info.date });
+  if (ruleStop) supports.push({ price: ruleStop.price, basis: ruleStop.basis, date: null });
+  supports.sort((x, y) => y.price - x.price);
+
+  const base = { entry, entryBasis, entryWhy: eWhy, entryRefs: eRefs, supports, maxRiskPct: P.risk.maxRiskPct };
+  if (ruleStop) {
+    const w = STOP_WHY[ruleStop.basis];
+    return { ...base, stop: ruleStop.price, stopBasis: ruleStop.basis, stopTested: true, stopWhy: w.why, stopRefs: w.refs };
+  }
+  if (leg && c >= leg.waist) {
+    return {
+      ...base,
+      stop: leg.waist,
+      stopBasis: "허리 이탈",
+      stopTested: false,
+      stopWhy: `${leg.info.date} 기준봉에서 시작한 마디의 허리입니다. 종가가 허리 아래로 내려가면 규칙은 마디가 망가진 것으로 봅니다.`,
+      stopRefs: ["b12", "b23"],
+    };
+  }
+  const low = lows.find((l) => l.price < c);
+  return low
+    ? {
+        ...base,
+        stop: low.price,
+        stopBasis: "전저점",
+        stopTested: false,
+        stopWhy: `${low.date}에 만든 스윙 저점으로, 종가 아래에서 가장 가까운 저점입니다. 살아 있는 기준 마디가 없어 강의의 추세 매매 손절(전저점)을 옮겼습니다.`,
+        stopRefs: ["m3", "b7"],
+      }
+    : { ...base, stop: null, stopBasis: null, stopTested: false, stopWhy: "최근 1년 안에 종가 아래로 기준이 될 저점이 없습니다.", stopRefs: [] };
 }
 
 function passed(signal: Signal): Analysis {
@@ -874,6 +947,8 @@ function firstBase(ctx: Ctx, t: number): Analysis {
   const watch: Watch = {
     id: "first_base",
     trigger: null,
+    triggerBasis: null,
+    boxBars: null,
     stop: null,
     stopBasis: null,
     riskPct: null,
@@ -892,6 +967,8 @@ function risingWatch(leg: Leg): Analysis {
   const watch: Watch = {
     id: "rising",
     trigger: null,
+    triggerBasis: null,
+    boxBars: null,
     stop: null,
     stopBasis: null,
     riskPct: null,
@@ -917,8 +994,12 @@ function firstOrWatch(ctx: Ctx, t: number, leg: Leg, pull: Pull, reason: string 
   // 내일 기준이므로 오늘 봉까지 포함해 수렴을 잰다
   const box = consolidation(ctx, t, Math.max(leg.p + 1, pull.lastBelowWaist + 1));
   let trigger: number | null = box ? Math.min(box.top, leg.high) : leg.high;
+  let triggerBasis: string | null = box && box.top < leg.high ? "수렴 상단" : "전고점";
   const stop = box ? box.low : Math.min(pull.pullLow, x.l);
-  if (trigger <= x.c) trigger = leg.high > x.c ? leg.high : null;
+  if (trigger <= x.c) {
+    trigger = leg.high > x.c ? leg.high : null;
+    triggerBasis = trigger == null ? null : "전고점";
+  }
   const riskPct = trigger != null ? ((trigger - stop) / trigger) * 100 : null;
   const distancePct = trigger != null ? ((trigger - x.c) / x.c) * 100 : null;
 
@@ -940,6 +1021,8 @@ function firstOrWatch(ctx: Ctx, t: number, leg: Leg, pull: Pull, reason: string 
   const watch: Watch = {
     id: healthy ? "pullback_forming" : "pullback_weak",
     trigger,
+    triggerBasis,
+    boxBars: box?.bars ?? null,
     stop,
     stopBasis: box ? "수렴 하단" : "눌림 저점",
     riskPct,
