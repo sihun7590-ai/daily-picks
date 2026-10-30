@@ -1,4 +1,5 @@
-import type { Bar, MarketId, Signal, Stage, Watch } from "./types";
+import type { Ctx } from "./rules";
+import type { Bar, Levels, MarketId, Signal, Stage, Watch } from "./types";
 
 export type ChartData = {
   bars: Bar[];
@@ -58,4 +59,35 @@ export function fmtPct(p: number, sign = false): string {
 /** 원화는 정수, 달러는 센트까지. 소수점 긴 가격이 화면과 파일을 지저분하게 만든다 */
 export function roundPrice(market: MarketId, p: number): number {
   return market === "kospi" ? Math.round(p) : Math.round(p * 100) / 100;
+}
+
+const CHART_BARS = 140;
+
+export function chartOf(market: MarketId, ctx: Ctx): ChartData {
+  const from = Math.max(0, ctx.bars.length - CHART_BARS);
+  const r = (x: number | null) => (x == null ? null : roundPrice(market, x));
+  return {
+    bars: ctx.bars.slice(from).map((b) => ({
+      t: b.t,
+      o: roundPrice(market, b.o),
+      h: roundPrice(market, b.h),
+      l: roundPrice(market, b.l),
+      c: roundPrice(market, b.c),
+      v: b.v,
+    })),
+    ma5: ctx.ma5.slice(from).map(r),
+    ma20: ctx.ma20.slice(from).map(r),
+    ma60: ctx.ma60.slice(from).map(r),
+    ma120: ctx.ma120.slice(from).map(r),
+    ma240: ctx.ma240.slice(from).map(r),
+  };
+}
+
+export function roundLevels(market: MarketId, l: Levels): Levels {
+  return {
+    legLow: roundPrice(market, l.legLow),
+    legHigh: roundPrice(market, l.legHigh),
+    waist: roundPrice(market, l.waist),
+    pullLow: l.pullLow == null ? null : roundPrice(market, l.pullLow),
+  };
 }

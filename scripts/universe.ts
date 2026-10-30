@@ -1,17 +1,17 @@
 /** 종목 목록을 갱신한다. 실패하거나 개수가 이상하면 기존 파일을 그대로 둔다. */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import type { Universe } from "../lib/types";
-import { fetchKospi, fetchSp500 } from "../lib/universe";
+import { fetchKosdaq, fetchKospi, fetchSp500 } from "../lib/universe";
 
 const FILE = "data/universe.json";
 /** 위키백과 표나 KRX 페이지가 바뀌면 조용히 절반만 파싱될 수 있어서 하한을 둔다 */
-const MIN = { kospi: 700, sp500: 490 };
+const MIN = { kospi: 700, kosdaq: 1200, sp500: 490 };
 
 export async function refreshUniverse(): Promise<Universe> {
   const prev: Universe | null = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")) : null;
-  const next: Universe = { updatedAt: prev?.updatedAt ?? "", kospi: prev?.kospi ?? [], sp500: prev?.sp500 ?? [] };
+  const next: Universe = { updatedAt: prev?.updatedAt ?? "", kospi: prev?.kospi ?? [], kosdaq: prev?.kosdaq ?? [], sp500: prev?.sp500 ?? [] };
   let changed = false;
-  for (const [market, fetcher] of [["kospi", fetchKospi], ["sp500", fetchSp500]] as const) {
+  for (const [market, fetcher] of [["kospi", fetchKospi], ["kosdaq", fetchKosdaq], ["sp500", fetchSp500]] as const) {
     try {
       const list = await fetcher();
       if (list.length < MIN[market]) throw new Error(`${list.length}개뿐입니다`);

@@ -1,6 +1,6 @@
 {
- "rulesVersion": 1,
- "generatedAt": "2026-10-30T11:56:59.256Z",
+ "rulesVersion": 2,
+ "generatedAt": "2026-10-30T12:32:14.318Z",
  "kospi": {
   "asOf": "2026-10-30",
   "regimeUp": false,

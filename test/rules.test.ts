@@ -115,6 +115,31 @@ test("데이터가 짧으면 판단하지 않는다", () => {
   assert.equal(analyze(prepare(bars), bars.length - 1).stage, "history");
 });
 
+test("여러 번 지지받은 저점을 깼다가 복귀하면 지지 이탈 복귀로 잡고 주의 문구를 붙인다", () => {
+  const bars = rising(150, 100, 0.1);
+  const last = bars[bars.length - 1].c;
+  bars.push(mk(last, last * 1.09, last * 0.995, last * 1.08, 4000)); // 기준봉
+  let p = last * 1.08;
+  for (let i = 0; i < 4; i++) {
+    bars.push(mk(p, p * 1.03, p * 0.995, p * 1.025, 2000));
+    p *= 1.025;
+  }
+  // 위쪽에서 오래 옆으로 간다. 저점이 같은 가격에 여러 번 닿는다
+  const support = p * 0.96;
+  for (let i = 0; i < 44; i++) {
+    const c = p * (i % 2 ? 0.985 : 0.975);
+    bars.push(mk(p * 0.98, p * 0.992, i % 6 === 0 ? support : p * 0.968, c, 500));
+  }
+  const prev = bars[bars.length - 1].c;
+  bars.push(mk(prev, prev * 1.002, support * 0.985, support * 0.99, 700)); // 지지 이탈
+  const dip = bars[bars.length - 1].c;
+  bars.push(mk(dip, p * 0.998, dip * 0.999, p * 0.996, 1500)); // 복귀. 횡보 상단까지 넘어야 바로 위가 막히지 않는다
+  const a = analyze(prepare(bars), bars.length - 1);
+  assert.equal(a.signal?.setup, "trap_reclaim", `${a.stage} ${a.note}`);
+  assert.equal(a.signal?.stopBasis, "이탈 저점");
+  assert.ok(a.signal?.warnings.some((w) => w.includes("기계 판별 성적")));
+});
+
 test("미래 참조 없음: t까지만 준 결과와 전체를 준 결과가 같다", () => {
   // 시드 고정 난수로 신호가 나올 만한 다양한 경로를 만든다
   let seed = 42;

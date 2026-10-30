@@ -8,9 +8,9 @@
  * 이 파일은 순수 함수만 둔다. fetch·파일 접근 금지.
  * 모든 판단은 t 시점까지의 봉만 본다 (test/rules.test.ts가 미래 참조를 검사한다).
  */
-import type { Analysis, Bar, BaseInfo, Levels, ScoreItem, SetupId, Signal, Watch } from "./types";
+import type { Analysis, Bar, BaseInfo, Check, Levels, RulePlan, ScoreItem, SetupId, Signal, Watch } from "./types";
 
-export const RULES_VERSION = 1;
+export const RULES_VERSION = 2;
 /** 시장 평균이 60일 평균 아래인 날은 신호를 내지 않는다. 2022~2024 검증에서 손실을 크게 줄였다. */
 export const USE_REGIME = true;
 /** 목표에서 절반 익절 후 나머지는 20일선 이탈까지 (초급 29·37화) */
@@ -89,10 +89,11 @@ export const P = {
   /** 고점 대량거래: 신규 매수 금지 (초급 10화) */
   climax: { volRatio: 3, upperWick: 0.5, vsMa20: 1.1, lookback: 5 },
   /**
-   * 강의의 "지지 이탈 복귀"는 사람이 맥락을 보고 고르는 자리다. 기계 판별로는 2022~2024에
-   * 코스피 -2.6%(10건), S&P -5.1%(22건)로 나빠서 후보에서 뺀다. 판별이 나아지면 enabled를 켠다.
+   * 강의의 "지지 이탈 복귀"(중급 16화)는 사람이 맥락을 보고 고르는 자리다. 기계 판별 성적은 나쁘다
+   * (1판 기준 2022~2024 코스피 -2.6%, S&P -5.1%). 성적이 아니라 사용자 요청으로 2판부터 켰고,
+   * 그래서 이 신호에는 주의 문구를 붙인다.
    */
-  trap: { enabled: false, window: 40, minTouches: 3, minSpan: 8, tolVsRange: 0.4, recentBars: 3, minVolRatio: 1 },
+  trap: { enabled: true, window: 40, minTouches: 3, minSpan: 8, tolVsRange: 0.4, recentBars: 3, minVolRatio: 1 },
 };
 
 /** 지표가 쌓이는 최소 봉 수 (120일선 + 비교 여유) */
@@ -265,6 +266,10 @@ function legAsOf(ctx: Ctx, asOf: number): Leg | null {
   };
 }
 
+function yearHigh(ctx: Ctx, t: number): number {
+  return maxHigh(ctx.bars, Math.max(0, t - 239), t);
+}
+
 function trendOk(ctx: Ctx, t: number): { ok: boolean; note: string | null } {
   const c = ctx.bars[t].c;
   const ma60 = ctx.ma60[t];
@@ -274,9 +279,7 @@ function trendOk(ctx: Ctx, t: number): { ok: boolean; note: string | null } {
   if (ma60 < ma120) return { ok: false, note: "60일선이 120일선 아래(역배열)" };
   if (ma120 < prev120) return { ok: false, note: "120일선이 아직 우하향" };
   if (c < ma60) return { ok: false, note: "종가가 60일선 아래" };
-  let high = -Infinity;
-  for (let i = Math.max(0, t - 239); i <= t; i++) high = Math.max(high, ctx.bars[i].h);
-  if (c < high * P.trend.minVsHigh) return { ok: false, note: "1년 고점과 멀어 위쪽 매물 부담" };
+  if (c < yearHigh(ctx, t) * P.trend.minVsHigh) return { ok: false, note: "1년 고점과 멀어 위쪽 매물 부담" };
   return { ok: true, note: null };
 }
 
@@ -638,7 +641,7 @@ function trapReclaim(ctx: Ctx, t: number, leg: Leg): ReturnType<typeof buildSign
   if (x.v / (vol20[t] || 1) < minVolRatio) return null;
 
   const boxTop = maxHigh(bars, from, t - 1);
-  return buildSignal(
+  const res = buildSignal(
     ctx,
     t,
     leg,
@@ -653,6 +656,8 @@ function trapReclaim(ctx: Ctx, t: number, leg: Leg): ReturnType<typeof buildSign
     false,
     true,
   );
+  if ("signal" in res) res.signal.warnings.unshift("기계 판별 성적이 나쁜 자리입니다. 차트 맥락을 직접 확인하세요");
+  return res;
 }
 
 /** t 시점의 분석. 여기서 bars[t] 이후를 읽으면 미래 참조다. */
@@ -792,6 +797,73 @@ export function analyze(ctx: Ctx, t: number): Analysis {
   return firstOrWatch(ctx, t, leg, pull, null) ?? none("no_trigger", "오늘 진입 신호 없음");
 }
 
+/**
+ * 내 종목 화면용. analyze가 "오늘 새로 살 자리인가"를 본다면, 이건 규칙이 보는 항목의 현재 값만 돌려준다.
+ * 들고 있는 종목을 어떻게 할지는 판단하지 않는다 — 이 항목들로 매도 시점을 고른 성적은 검증한 적이 없다.
+ */
+export function positionChecks(ctx: Ctx, t: number): { checks: Check[]; levels: Levels | null; baseDate: string | null } {
+  const c = ctx.bars[t].c;
+  const gap = (line: number) => `${(Math.abs(c / line - 1) * 100).toFixed(1)}% ${c >= line ? "위" : "아래"}`;
+  const line = (key: string, label: string, value: number | null): Check =>
+    value == null ? { key, label, ok: null, detail: "데이터 부족" } : { key, label, ok: c >= value, detail: `종가가 ${gap(value)}` };
+
+  const ma60 = ctx.ma60[t];
+  const ma120 = ctx.ma120[t];
+  const prev120 = ctx.ma120[t - 1];
+  const align: Check =
+    ma60 == null || ma120 == null || prev120 == null
+      ? { key: "align", label: "이평 배열", ok: null, detail: "데이터 부족" }
+      : {
+          key: "align",
+          label: "이평 배열",
+          ok: ma60 >= ma120 && ma120 >= prev120,
+          detail: `60일선이 120일선 ${ma60 >= ma120 ? "위" : "아래"}, 120일선 ${ma120 >= prev120 ? "상승" : "하락"} 중`,
+        };
+
+  const high = yearHigh(ctx, t);
+  const leg = legAsOf(ctx, t);
+  const climax = hasClimax(ctx, t);
+  const checks: Check[] = [
+    line("ma20", "20일선", ctx.ma20[t]),
+    line("ma60", "60일선", ma60),
+    align,
+    { key: "high", label: "1년 고점", ok: c >= high * P.trend.minVsHigh, detail: `고점보다 ${((1 - c / high) * 100).toFixed(1)}% 아래` },
+    leg ? { ...line("waist", "기준 마디 허리", leg.waist), detail: `종가가 ${gap(leg.waist)} (기준봉 ${leg.info.date})` } : { key: "waist", label: "기준 마디 허리", ok: null, detail: "최근 60봉에 기준봉 없음" },
+    { key: "climax", label: "고점 대량거래", ok: !climax, detail: `최근 ${P.climax.lookback}봉 안에 ${climax ? "있음" : "없음"}` },
+  ];
+  return { checks, levels: leg ? levelsOf(leg, null) : null, baseDate: leg?.info.date ?? null };
+}
+
+/** 종가 아래에서 가장 가까운 스윙 저점 */
+function swingLowBelow(bars: Bar[], t: number, below: number): number | null {
+  let best: number | null = null;
+  for (let i = t - 3; i >= Math.max(3, t - 120); i--) {
+    const low = bars[i].l;
+    if (low >= below || (best != null && low <= best)) continue;
+    let pivot = true;
+    for (let k = i - 3; k <= i + 3; k++) if (k !== i && bars[k].l < low) pivot = false;
+    if (pivot) best = low;
+  }
+  return best;
+}
+
+/**
+ * 내 종목 화면의 진입·손절 참고값. 규칙을 차트에 기계적으로 적용한 값이고 사용자의 매수가는 보지 않는다.
+ * 진입은 규칙이 정한 자리가 있을 때만 준다. 손절은 신호·눌림의 손절선이 있으면 그것을 쓰고,
+ * 없으면 강의 기준(허리 이탈 초급 12화, 전저점 중급 3화)으로 대신한다. 이 대체값은 과거 검증을 거치지 않았다.
+ */
+export function positionPlan(ctx: Ctx, t: number, a: Analysis): RulePlan {
+  const c = ctx.bars[t].c;
+  if (a.signal) return { entry: a.signal.entry, entryBasis: "오늘 신호가 나온 가격(오늘 종가)", stop: a.signal.stop, stopBasis: a.signal.stopBasis, stopTested: true };
+  const entry = a.watch?.trigger ?? null;
+  const entryBasis = entry != null ? "이 가격을 거래량과 함께 넘으면 신호" : null;
+  if (a.watch?.stop != null) return { entry, entryBasis, stop: a.watch.stop, stopBasis: a.watch.stopBasis, stopTested: true };
+  const leg = legAsOf(ctx, t);
+  if (leg && c >= leg.waist) return { entry, entryBasis, stop: leg.waist, stopBasis: "허리 이탈", stopTested: false };
+  const low = swingLowBelow(ctx.bars, t, c);
+  return { entry, entryBasis, stop: low, stopBasis: low != null ? "전저점" : null, stopTested: false };
+}
+
 function passed(signal: Signal): Analysis {
   return { stage: "pass", signal, watch: null, note: null };
 }
@@ -803,6 +875,7 @@ function firstBase(ctx: Ctx, t: number): Analysis {
     id: "first_base",
     trigger: null,
     stop: null,
+    stopBasis: null,
     riskPct: null,
     distancePct: null,
     score: Math.round(40 + 20 * clamp01((leg.info.volRatio - 2) / 3)),
@@ -820,6 +893,7 @@ function risingWatch(leg: Leg): Analysis {
     id: "rising",
     trigger: null,
     stop: null,
+    stopBasis: null,
     riskPct: null,
     distancePct: null,
     score: Math.round(20 + 15 * clamp01((legGain - 0.08) / 0.32) + 10 * clamp01((leg.info.volRatio - 2) / 3)),
@@ -867,6 +941,7 @@ function firstOrWatch(ctx: Ctx, t: number, leg: Leg, pull: Pull, reason: string 
     id: healthy ? "pullback_forming" : "pullback_weak",
     trigger,
     stop,
+    stopBasis: box ? "수렴 하단" : "눌림 저점",
     riskPct,
     distancePct,
     // 조건을 다 갖춘 눌림이 언제나 부족한 눌림보다 위에 오도록 구간을 나눈다

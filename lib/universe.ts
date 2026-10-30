@@ -15,8 +15,8 @@ function cellsOf(row: string): string[] {
 }
 
 /** KRX 상장법인목록. 회사 단위라 우선주·ETF는 애초에 없다. */
-export async function fetchKospi(): Promise<UniverseItem[]> {
-  const res = await fetch("https://kind.krx.co.kr/corpgeneral/corpList.do?method=download&marketType=stockMkt", {
+async function fetchKrx(marketType: "stockMkt" | "kosdaqMkt", suffix: "KS" | "KQ"): Promise<UniverseItem[]> {
+  const res = await fetch(`https://kind.krx.co.kr/corpgeneral/corpList.do?method=download&marketType=${marketType}`, {
     headers: UA,
     signal: AbortSignal.timeout(30_000),
   });
@@ -31,8 +31,12 @@ export async function fetchKospi(): Promise<UniverseItem[]> {
   return rows
     .slice(1)
     .filter((r) => r[iCode] && !/스팩/.test(r[iName]))
-    .map((r) => ({ symbol: `${r[iCode]}.KS`, code: r[iCode], name: r[iName], sector: r[iSector] ?? "" }));
+    .map((r) => ({ symbol: `${r[iCode]}.${suffix}`, code: r[iCode], name: r[iName], sector: r[iSector] ?? "" }));
 }
+
+export const fetchKospi = () => fetchKrx("stockMkt", "KS");
+/** 후보를 고르는 대상은 아니다. 내 종목 화면의 이름 검색에만 쓴다 */
+export const fetchKosdaq = () => fetchKrx("kosdaqMkt", "KQ");
 
 export async function fetchSp500(): Promise<UniverseItem[]> {
   const res = await fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", {

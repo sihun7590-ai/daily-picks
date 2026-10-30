@@ -143,6 +143,9 @@ export default function RulesPage() {
         <Rule title={SETUP_LABEL.pullback_confirm} refs={[LECTURES.b39]}>
           전날 거래량이 평균의 {P.trigger.confirmPrevVol * 100}% 아래로 마르고, 허리나 20일선 근처에서 평균 이상 거래량의 양봉이 전날 몸통을 넘음. 예측 매매라 손익비 {P.risk.minRrPredictive} 이상만 받습니다.
         </Rule>
+        <Rule title={SETUP_LABEL.trap_reclaim} refs={[LECTURES.m16, LECTURES.m7]}>
+          최근 {P.trap.window}봉 안에서 {P.trap.minTouches}번 이상 지지받은 저점을 최근 {P.trap.recentBars}봉 안에 깼다가, 그 위로 평균 이상 거래량의 양봉으로 복귀. 손절선은 이탈 저점. 강사가 가장 좋은 자리로 꼽아 2판부터 넣었지만 기계 판별 성적은 나쁩니다(아래 표). 사람이 맥락을 보고 고르는 자리이니 차트를 직접 확인하세요.
+        </Rule>
         <Rule title="공통 탈락" refs={[LECTURES.b10, LECTURES.m6, LECTURES.m20]}>
           최근 5일 고점 대량거래(평균 {P.climax.volRatio}배 이상 + 긴 윗꼬리), 돌파 실패 2회 이상(박스), 20일선과 {Math.round((P.risk.maxVsMa20 - 1) * 100)}% 이상 벌어짐, 손절 폭 {P.risk.maxRiskPct}% 초과, 손익비 {P.risk.minRr} 미만, 바로 위에 여러 번 막힌 저항.
         </Rule>
@@ -174,19 +177,14 @@ export default function RulesPage() {
           <li>지금 상장된 종목만 봤습니다. 상장폐지되거나 지수에서 빠진 종목이 없어 실제보다 좋게 나옵니다.</li>
           <li>"±"는 표준오차입니다. 평균이 ±의 2배 안쪽이면 우연과 구분되지 않습니다.</li>
           <li>규칙을 고르는 근거로는 2022~2024년만 썼고, 규칙을 확정한 뒤 2025~2026년 결과를 보고 다시 고치지 않았습니다. 다만 초기 버전을 돌릴 때 그 구간 숫자가 함께 출력된 적이 있어 완전히 보지 않은 데이터는 아닙니다.</li>
+          <li>{SETUP_LABEL.trap_reclaim}은 성적 때문이 아니라 사용자 요청으로 2판에서 켠 것입니다. 1판보다 성적이 좋아지리라는 근거는 없습니다.</li>
         </ul>
       </div>
 
       <h2 className="mb-2 mt-8 text-lg font-bold">강의에 있지만 넣지 않은 것</h2>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-line bg-surface p-4">
-          <Stat label="지지 이탈 복귀" value="꺼 둠" />
-          <p className="mt-1 text-sm leading-relaxed text-ink-2">강사가 가장 좋은 자리로 꼽지만, 기계 판별로는 2022~2024년에 코스피 -2.6%, S&P 500 -5.1%로 나빴습니다. 사람이 맥락을 보고 골라야 하는 자리로 판단했습니다.</p>
-        </div>
-        <div className="rounded-xl border border-line bg-surface p-4">
-          <Stat label="사람의 판단 영역" value="자동화 안 함" />
-          <p className="mt-1 text-sm leading-relaxed text-ink-2">세력 의도 읽기, 종목별 움직임 습관, 분봉으로 좁힌 기준가, 시황과 재료는 넣지 않았습니다. 일봉 기준으로만 보니 상세 화면에서 직접 확인하세요.</p>
-        </div>
+      <div className="rounded-xl border border-line bg-surface p-4">
+        <Stat label="사람의 판단 영역" value="자동화 안 함" />
+        <p className="mt-1 text-sm leading-relaxed text-ink-2">세력 의도 읽기, 종목별 움직임 습관, 분봉으로 좁힌 기준가, 시황과 재료는 넣지 않았습니다. 일봉 기준으로만 보니 상세 화면에서 직접 확인하세요.</p>
       </div>
     </>
   );

@@ -22,6 +22,8 @@ export type UniverseItem = {
 export type Universe = {
   updatedAt: string;
   kospi: UniverseItem[];
+  /** 내 종목 화면의 이름 검색에만 쓴다. 후보를 고르는 대상이 아니다 */
+  kosdaq: UniverseItem[];
   sp500: UniverseItem[];
 };
 
@@ -88,6 +90,7 @@ export type Watch = {
   /** 이 가격을 거래량과 함께 넘으면 신호가 된다. 1차 기준봉은 아직 트리거가 없다. */
   trigger: number | null;
   stop: number | null;
+  stopBasis: string | null;
   riskPct: number | null;
   distancePct: number | null;
   score: number;
@@ -95,6 +98,24 @@ export type Watch = {
   levels: Levels;
   base: BaseInfo;
   dryUp: number | null;
+};
+
+/** 규칙이 보는 항목의 현재 값. ok가 null이면 데이터가 없어 판단할 수 없다 */
+export type Check = {
+  key: string;
+  label: string;
+  ok: boolean | null;
+  detail: string;
+};
+
+/** 규칙을 차트에 기계적으로 적용한 진입·손절 참고값. 규칙이 정한 자리가 없으면 null */
+export type RulePlan = {
+  entry: number | null;
+  entryBasis: string | null;
+  stop: number | null;
+  stopBasis: string | null;
+  /** 과거 검증에 쓴 손절선인가. false면 강의 기준을 옮긴 대체값이다 */
+  stopTested: boolean;
 };
 
 /** 깔때기 어느 단계에서 탈락했는지. 기준이 너무 빡빡한지 판단하는 근거로 쓴다. */

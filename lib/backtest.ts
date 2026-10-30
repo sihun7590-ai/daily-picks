@@ -28,9 +28,16 @@ export type Trade = {
   date: string;
   year: string;
   score: number;
+  entryDate: string;
+  exitDate: string;
+  entry: number;
+  stop: number;
+  target: number;
   r: number;
   ret: number;
   outcome: "target" | "stop" | "time" | "trail";
+  /** 데이터가 끝날 때까지 청산되지 않았다. ret은 마지막 종가로 평가한 값이다 */
+  open: boolean;
   held: number;
   /** 보유 기간 동안 시장 평균 대비 초과 수익 (%) */
   excess: number | null;
@@ -82,7 +89,13 @@ export function regimeUp(index: Map<string, number>, n = 60): Set<string> {
   return out;
 }
 
-type SimOpts = { exit: ExitMode; regime?: Set<string>; maxHold?: number };
+type SimOpts = {
+  exit: ExitMode;
+  regime?: Set<string>;
+  maxHold?: number;
+  /** 이 날짜의 신호만 받는다. 없으면 전부 받는다 */
+  eligible?: (date: string) => boolean;
+};
 
 export function simulate(market: MarketId, symbol: string, bars: Bar[], index: Map<string, number>, opts: SimOpts): Trade[] {
   const ctx = prepare(bars);
@@ -90,7 +103,7 @@ export function simulate(market: MarketId, symbol: string, bars: Bar[], index: M
   const maxHold = opts.maxHold ?? (opts.exit === "fixed" ? 40 : 120);
   let t = 130;
   while (t < bars.length - 2) {
-    if (!liquid(bars, t, LIQUIDITY[market]) || (opts.regime && !opts.regime.has(bars[t].t))) {
+    if (!liquid(bars, t, LIQUIDITY[market]) || (opts.regime && !opts.regime.has(bars[t].t)) || (opts.eligible && !opts.eligible(bars[t].t))) {
       t++;
       continue;
     }
@@ -179,9 +192,15 @@ export function simulate(market: MarketId, symbol: string, bars: Bar[], index: M
       date: bars[t].t,
       year: bars[t].t.slice(0, 4),
       score: s.score,
+      entryDate: bars[entryBar].t,
+      exitDate: bars[last].t,
+      entry,
+      stop: s.stop,
+      target: s.target,
       r,
       ret: ret * 100,
       outcome,
+      open: !closed && last === bars.length - 1,
       held: last - entryBar + 1,
       excess,
       fwd20,

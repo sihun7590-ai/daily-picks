@@ -18,6 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="font-bold">
               오늘의 후보
             </Link>
+            <Link href="/my" className="text-ink-2 hover:text-ink">
+              내 종목
+            </Link>
             <Link href="/rules" className="text-ink-2 hover:text-ink">
               선정 기준과 검증
             </Link>

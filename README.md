@@ -27,6 +27,16 @@ GitHub Actions (평일 16:30 KST)
 | `scripts/refresh.ts` | 매일 도는 작업 |
 | `scripts/backtest.ts` | `data/backtest.json` 재생성 |
 | `scripts/research.ts`, `study.ts` | 규칙을 고를 때 쓴 비교. 사이트와 무관 |
+| `components/MyStocks.tsx`, `lib/holdings.ts` | 내 종목 화면 |
+
+## 내 종목 화면
+
+`/my`에서 각자 보유 종목을 넣어 본다. **종목과 매수가는 브라우저 `localStorage`에만 저장한다.** 저장소가 공개이므로 `data/`나 코드에 넣지 않는다.
+
+- 화면을 열 때 `/api/holdings`가 종목 코드만 받아 Yahoo 시세로 계산해 돌려주고, 아무것도 저장하지 않는다. 매수가는 서버로 보내지 않는다.
+- 후보 선정(코스피·S&P 500)과 달리 코스닥, ETF, 다른 미국 주식도 받는다. 이런 종목은 규칙의 과거 검증 범위 밖이고 화면에도 그렇게 표시한다.
+- `lib/rules.ts`의 `positionChecks`와 `positionPlan`은 항목의 현재 값과 진입·손절 참고값만 돌려준다. 매수가를 보지 않으며 **보유 종목의 매도·보유 결론을 내지 않는다.** 그런 판단을 넣으려면 먼저 검증해야 한다.
+- 손절 참고값 중 허리 이탈·전저점은 신호나 눌림이 없을 때의 대체값으로, 과거 검증을 거치지 않았다. 화면에 "(미검증)"으로 표시한다.
 
 ## 명령어
 
@@ -35,6 +45,7 @@ npm run dev        # 개발 서버
 npm test           # 규칙 테스트 (미래 참조 검사 포함)
 npm run refresh    # 오늘 후보 다시 계산. 네트워크 사용, 약 2분
 npm run backtest   # 5년치 검증. 첫 실행은 시세 수집이 필요, .cache/에 저장
+npm run backtest:watch   # 관심 종목을 규칙대로 매매했을 때의 종목별 기록. backtest 뒤에 실행, 사이트와 무관
 npm run build
 ```
 

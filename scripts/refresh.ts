@@ -8,45 +8,15 @@
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { LIQUIDITY, liquid, marketIndex, regimeUp } from "../lib/backtest";
-import { MARKET_LABEL, roundPrice, type ChartData, type MarketPicks, type PicksFile, type SignalPick, type WatchPick } from "../lib/picks";
-import { analyze, prepare, RULES_VERSION, USE_REGIME, type Ctx } from "../lib/rules";
-import type { Bar, Levels, MarketId, UniverseItem } from "../lib/types";
+import { chartOf, MARKET_LABEL, roundLevels, roundPrice, type MarketPicks, type PicksFile, type SignalPick, type WatchPick } from "../lib/picks";
+import { analyze, prepare, RULES_VERSION, USE_REGIME } from "../lib/rules";
+import type { Bar, MarketId, UniverseItem } from "../lib/types";
 import { fetchBars, mapPool } from "../lib/yahoo";
 import { refreshUniverse } from "./universe";
 
 /** 시장별 수집 실패 허용 비율. 넘으면 소스가 죽었거나 막힌 것이다 */
 const MAX_FAILURE_RATE = 0.1;
-const CHART_BARS = 140;
 const WATCH_LIMIT = 12;
-
-function chartOf(market: MarketId, ctx: Ctx): ChartData {
-  const from = Math.max(0, ctx.bars.length - CHART_BARS);
-  const r = (x: number | null) => (x == null ? null : roundPrice(market, x));
-  return {
-    bars: ctx.bars.slice(from).map((b) => ({
-      t: b.t,
-      o: roundPrice(market, b.o),
-      h: roundPrice(market, b.h),
-      l: roundPrice(market, b.l),
-      c: roundPrice(market, b.c),
-      v: b.v,
-    })),
-    ma5: ctx.ma5.slice(from).map(r),
-    ma20: ctx.ma20.slice(from).map(r),
-    ma60: ctx.ma60.slice(from).map(r),
-    ma120: ctx.ma120.slice(from).map(r),
-    ma240: ctx.ma240.slice(from).map(r),
-  };
-}
-
-function roundLevels(market: MarketId, l: Levels): Levels {
-  return {
-    legLow: roundPrice(market, l.legLow),
-    legHigh: roundPrice(market, l.legHigh),
-    waist: roundPrice(market, l.waist),
-    pullLow: l.pullLow == null ? null : roundPrice(market, l.pullLow),
-  };
-}
 
 /** 가장 많은 종목이 가진 마지막 날짜. 거래정지 종목의 옛 날짜에 끌려가지 않는다 */
 function latestDate(all: Bar[][]): string {
