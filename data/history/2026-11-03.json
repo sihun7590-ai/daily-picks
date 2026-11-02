@@ -1,0 +1,141 @@
+{
+ "rulesVersion": 2,
+ "generatedAt": "2026-11-02T17:20:07.150Z",
+ "kospi": {
+  "asOf": "2026-10-30",
+  "regimeUp": false,
+  "funnel": {
+   "trend": 232,
+   "illiquid": 558,
+   "leg_broken": 1,
+   "stale": 27,
+   "no_trigger": 4,
+   "no_leg": 4,
+   "risk": 1,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_forming",
+    "trigger": 99000,
+    "stop": 94200
+   },
+   {
+    "code": "028050",
+    "name": "삼성E&A",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "011200",
+    "name": "HMM",
+    "id": "pullback_weak",
+    "trigger": 24250,
+    "stop": 21750
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-10-30",
+  "regimeUp": true,
+  "funnel": {
+   "no_leg": 114,
+   "trend": 358,
+   "leg_broken": 7,
+   "no_trigger": 18,
+   "illiquid": 3,
+   "history": 3
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "pullback_forming",
+    "trigger": 120.95,
+    "stop": 117.14
+   },
+   {
+    "code": "PG",
+    "name": "Procter & Gamble",
+    "id": "pullback_forming",
+    "trigger": 166.85,
+    "stop": 157.4
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 371,
+    "stop": 351.59
+   },
+   {
+    "code": "IT",
+    "name": "Gartner",
+    "id": "pullback_forming",
+    "trigger": 234.87,
+    "stop": 214.85
+   },
+   {
+    "code": "GPN",
+    "name": "Global Payments",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "REGN",
+    "name": "Regeneron Pharmaceuticals",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "EL",
+    "name": "Estée Lauder Companies (The)",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "GDDY",
+    "name": "GoDaddy",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "VRTX",
+    "name": "Vertex Pharmaceuticals",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "CRL",
+    "name": "Charles River Laboratories",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "AMGN",
+    "name": "Amgen",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}
