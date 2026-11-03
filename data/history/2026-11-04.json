@@ -1,0 +1,159 @@
+{
+ "rulesVersion": 2,
+ "generatedAt": "2026-11-03T15:25:35.785Z",
+ "kospi": {
+  "asOf": "2026-11-02",
+  "regimeUp": false,
+  "funnel": {
+   "trend": 231,
+   "illiquid": 560,
+   "leg_broken": 2,
+   "stale": 24,
+   "no_trigger": 6,
+   "no_leg": 4,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "011200",
+    "name": "HMM",
+    "id": "pullback_forming",
+    "trigger": 23800,
+    "stop": 22300
+   },
+   {
+    "code": "028050",
+    "name": "삼성E&A",
+    "id": "pullback_forming",
+    "trigger": 64000,
+    "stop": 59700
+   },
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_weak",
+    "trigger": 98300,
+    "stop": 94200
+   },
+   {
+    "code": "089590",
+    "name": "제주항공",
+    "id": "pullback_weak",
+    "trigger": 5890,
+    "stop": 5250
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-02",
+  "regimeUp": true,
+  "funnel": {
+   "no_leg": 122,
+   "trend": 350,
+   "no_trigger": 17,
+   "leg_broken": 7,
+   "history": 3,
+   "illiquid": 2,
+   "pass": 1
+  },
+  "signals": [
+   {
+    "code": "IT",
+    "name": "Gartner",
+    "setup": "second_base",
+    "entry": 235.26,
+    "stop": 214.85,
+    "target": 273.68,
+    "score": 39,
+    "held": false
+   }
+  ],
+  "watch": [
+   {
+    "code": "PG",
+    "name": "Procter & Gamble",
+    "id": "pullback_forming",
+    "trigger": 165.36,
+    "stop": 161.03
+   },
+   {
+    "code": "TGT",
+    "name": "Target Corporation",
+    "id": "pullback_forming",
+    "trigger": 159.29,
+    "stop": 152.06
+   },
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "pullback_forming",
+    "trigger": 120.95,
+    "stop": 117.14
+   },
+   {
+    "code": "VLTO",
+    "name": "Veralto",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "GPN",
+    "name": "Global Payments",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "REGN",
+    "name": "Regeneron Pharmaceuticals",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "LMT",
+    "name": "Lockheed Martin",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "GDDY",
+    "name": "GoDaddy",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ULTA",
+    "name": "Ulta Beauty",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "VRTX",
+    "name": "Vertex Pharmaceuticals",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}
