@@ -1,0 +1,140 @@
+{
+ "rulesVersion": 2,
+ "generatedAt": "2026-11-04T15:39:50.981Z",
+ "kospi": {
+  "asOf": "2026-11-03",
+  "regimeUp": false,
+  "funnel": {
+   "trend": 228,
+   "illiquid": 561,
+   "leg_broken": 3,
+   "stale": 25,
+   "no_trigger": 4,
+   "no_leg": 6,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "011200",
+    "name": "HMM",
+    "id": "pullback_forming",
+    "trigger": 23800,
+    "stop": 22300
+   },
+   {
+    "code": "180640",
+    "name": "한진칼",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_weak",
+    "trigger": 99000,
+    "stop": 93100
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-03",
+  "regimeUp": true,
+  "funnel": {
+   "no_leg": 121,
+   "trend": 352,
+   "no_trigger": 19,
+   "leg_broken": 5,
+   "history": 3,
+   "illiquid": 2
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "PG",
+    "name": "Procter & Gamble",
+    "id": "pullback_forming",
+    "trigger": 165.36,
+    "stop": 161.03
+   },
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "pullback_forming",
+    "trigger": 120.95,
+    "stop": 117.14
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 362.91,
+    "stop": 350.66
+   },
+   {
+    "code": "LMT",
+    "name": "Lockheed Martin",
+    "id": "pullback_forming",
+    "trigger": 647.24,
+    "stop": 631.04
+   },
+   {
+    "code": "EL",
+    "name": "Estée Lauder Companies (The)",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "REGN",
+    "name": "Regeneron Pharmaceuticals",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "GDDY",
+    "name": "GoDaddy",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "GPN",
+    "name": "Global Payments",
+    "id": "pullback_weak",
+    "trigger": 100.37,
+    "stop": 96.02
+   },
+   {
+    "code": "TEL",
+    "name": "TE Connectivity",
+    "id": "pullback_weak",
+    "trigger": 222.5,
+    "stop": 213.86
+   },
+   {
+    "code": "NDAQ",
+    "name": "Nasdaq, Inc.",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}
