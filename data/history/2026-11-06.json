@@ -1,0 +1,148 @@
+{
+ "rulesVersion": 2,
+ "generatedAt": "2026-11-05T15:42:12.635Z",
+ "kospi": {
+  "asOf": "2026-11-04",
+  "regimeUp": false,
+  "funnel": {
+   "illiquid": 561,
+   "trend": 226,
+   "leg_broken": 3,
+   "stale": 25,
+   "no_trigger": 5,
+   "no_leg": 6,
+   "history": 1,
+   "risk": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "011200",
+    "name": "HMM",
+    "id": "pullback_forming",
+    "trigger": 23800,
+    "stop": 22300
+   },
+   {
+    "code": "089590",
+    "name": "제주항공",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "180640",
+    "name": "한진칼",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-04",
+  "regimeUp": true,
+  "funnel": {
+   "no_leg": 126,
+   "no_trigger": 33,
+   "trend": 334,
+   "leg_broken": 5,
+   "history": 3,
+   "illiquid": 2
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 371,
+    "stop": 350.66
+   },
+   {
+    "code": "SWK",
+    "name": "Stanley Black & Decker",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "XYZ",
+    "name": "Block, Inc.",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "CNC",
+    "name": "Centene Corporation",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ZBH",
+    "name": "Zimmer Biomet",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "BDX",
+    "name": "Becton Dickinson",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "HCA",
+    "name": "HCA Healthcare",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "MMM",
+    "name": "3M",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "COR",
+    "name": "Cencora",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "GEHC",
+    "name": "GE HealthCare",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "MSFT",
+    "name": "Microsoft",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "CDW",
+    "name": "CDW Corporation",
+    "id": "first_base",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}

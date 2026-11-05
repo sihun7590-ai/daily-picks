@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-04T15:39:36.219Z",
+ "updatedAt": "2026-11-05T15:41:53.305Z",
  "kospi": [
   {
    "symbol": "000020.KS",
@@ -17178,12 +17178,6 @@
    "sector": "Consumer Staples"
   },
   {
-   "symbol": "KVUE",
-   "code": "KVUE",
-   "name": "Kenvue",
-   "sector": "Consumer Staples"
-  },
-  {
    "symbol": "L",
    "code": "L",
    "name": "Loews Corporation",
@@ -17620,6 +17614,12 @@
    "code": "OKE",
    "name": "Oneok",
    "sector": "Energy"
+  },
+  {
+   "symbol": "OKTA",
+   "code": "OKTA",
+   "name": "Okta, Inc.",
+   "sector": "Information Technology"
   },
   {
    "symbol": "OMC",
