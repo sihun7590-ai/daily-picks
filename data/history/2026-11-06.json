@@ -1,32 +1,45 @@
 {
- "rulesVersion": 2,
- "generatedAt": "2026-11-05T15:42:12.635Z",
+ "rulesVersion": 3,
+ "generatedAt": "2026-11-06T01:51:27.602Z",
  "kospi": {
-  "asOf": "2026-11-04",
+  "asOf": "2026-11-05",
   "regimeUp": false,
   "funnel": {
-   "illiquid": 561,
-   "trend": 226,
-   "leg_broken": 3,
-   "stale": 25,
-   "no_trigger": 5,
-   "no_leg": 6,
-   "history": 1,
-   "risk": 1
+   "illiquid": 565,
+   "trend": 204,
+   "leg_broken": 18,
+   "no_trigger": 9,
+   "no_leg": 8,
+   "stale": 23,
+   "history": 1
   },
   "signals": [],
   "watch": [
    {
-    "code": "011200",
-    "name": "HMM",
+    "code": "012750",
+    "name": "에스원",
     "id": "pullback_forming",
-    "trigger": 23800,
-    "stop": 22300
+    "trigger": 99800,
+    "stop": 96300
+   },
+   {
+    "code": "001450",
+    "name": "현대해상",
+    "id": "pullback_forming",
+    "trigger": 45550,
+    "stop": 42000
+   },
+   {
+    "code": "000810",
+    "name": "삼성화재해상보험",
+    "id": "pullback_forming",
+    "trigger": 679000,
+    "stop": 640000
    },
    {
     "code": "089590",
     "name": "제주항공",
-    "id": "rising",
+    "id": "first_base",
     "trigger": null,
     "stop": null
    },
@@ -38,11 +51,32 @@
     "stop": null
    },
    {
-    "code": "012750",
-    "name": "에스원",
+    "code": "089860",
+    "name": "롯데렌탈",
     "id": "rising",
     "trigger": null,
     "stop": null
+   },
+   {
+    "code": "294870",
+    "name": "IPARK현대산업개발",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "012030",
+    "name": "DB",
+    "id": "pullback_weak",
+    "trigger": 2425,
+    "stop": 2185
+   },
+   {
+    "code": "033780",
+    "name": "케이티앤지",
+    "id": "pullback_weak",
+    "trigger": 198700,
+    "stop": 191000
    }
   ]
  },
@@ -50,12 +84,12 @@
   "asOf": "2026-11-04",
   "regimeUp": true,
   "funnel": {
-   "no_leg": 126,
-   "no_trigger": 33,
-   "trend": 334,
-   "leg_broken": 5,
+   "no_trigger": 42,
+   "no_leg": 101,
+   "trend": 331,
+   "leg_broken": 25,
    "history": 3,
-   "illiquid": 2
+   "risk": 1
   },
   "signals": [],
   "watch": [
@@ -102,8 +136,8 @@
     "stop": null
    },
    {
-    "code": "HCA",
-    "name": "HCA Healthcare",
+    "code": "UHS",
+    "name": "Universal Health Services",
     "id": "first_base",
     "trigger": null,
     "stop": null
@@ -123,13 +157,6 @@
     "stop": null
    },
    {
-    "code": "GEHC",
-    "name": "GE HealthCare",
-    "id": "first_base",
-    "trigger": null,
-    "stop": null
-   },
-   {
     "code": "MSFT",
     "name": "Microsoft",
     "id": "first_base",
@@ -140,6 +167,13 @@
     "code": "CDW",
     "name": "CDW Corporation",
     "id": "first_base",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "REGN",
+    "name": "Regeneron Pharmaceuticals",
+    "id": "rising",
     "trigger": null,
     "stop": null
    }

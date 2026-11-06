@@ -13,7 +13,8 @@ import type { Bar, MarketId, SetupId } from "./types";
 /** 왕복 거래비용 가정. 코스피는 증권거래세가 있어 더 크다. */
 export const COST: Record<MarketId, number> = { kospi: 0.003, sp500: 0.001 };
 /** 20일 평균 거래대금 하한. 체결이 안 되는 종목은 후보로 의미가 없다. */
-export const LIQUIDITY: Record<MarketId, number> = { kospi: 3e9, sp500: 5e7 };
+/** S&P 500은 구성 종목이 모두 대형주라 하한이 거의 걸리지 않는다. 시세 오류로 거래가 끊긴 날만 거른다 */
+export const LIQUIDITY: Record<MarketId, number> = { kospi: 3e9, sp500: 1e7 };
 
 export type ExitMode =
   /** 목표에서 전량 익절, 손절선 고정, 40봉 시간 청산 */

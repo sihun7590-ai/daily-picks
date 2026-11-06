@@ -106,23 +106,23 @@ export default function RulesPage() {
       <h2 className="mb-2 mt-8 text-lg font-bold">1단계: 볼 만한 종목인가</h2>
       <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
         <Rule title="거래대금" refs={[LECTURES.b5]}>
-          20일 평균 거래대금 코스피 30억 원, S&P 500 5천만 달러 이상.
+          20일 평균 거래대금 코스피 30억 원, S&P 500 1천만 달러 이상. S&P 500은 구성 종목이 모두 대형주라 시세가 끊긴 날만 걸러집니다.
         </Rule>
         <Rule title="시장 상태" refs={[LECTURES.b36]}>
           시장 전체 평균이 60일 평균 위일 때만 새 신호를 냅니다. 강의의 "매매 구간"을 시장 전체에 적용한 판단으로, 강의에 직접 나오는 규칙은 아닙니다. 2022~2024년 코스피에서 손실을 크게 줄였습니다.
         </Rule>
-        <Rule title="추세" refs={[LECTURES.m13]}>
-          60일선이 120일선 위, 120일선 우상향, 종가가 60일선 위.
+        <Rule title="추세" refs={[LECTURES.m13, LECTURES.b14]}>
+          60일선이 120일선 위(상승 중 재수렴은 60·120만 정배열이면 된다는 초급 14화 기준), 60·120일선 모두 우상향. 돌파 신호가 나는 날에는 5일선이 고개를 들고 20일선이 꺾이지 않아야 합니다.
         </Rule>
         <Rule title="위쪽 매물" refs={[LECTURES.b7, LECTURES.m19]}>
-          종가가 1년 고점의 {Math.round(P.trend.minVsHigh * 100)}% 이상. 물린 매물이 많은 자리는 피합니다.
+          고점과의 거리를 퍼센트로 자르지 않습니다. 대신 기준봉이 수평 저항선을 넘어야 하고, 매수 자리 바로 위에 여러 번 막힌 저항이 있으면 신호를 버립니다.
         </Rule>
       </ul>
 
       <h2 className="mb-2 mt-8 text-lg font-bold">2단계: 기준 마디가 살아 있는가</h2>
       <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
         <Rule title="기준봉" refs={[LECTURES.b11]}>
-          최근 {P.leg.maxAge}봉 안에 다음을 모두 갖춘 캔들: 평소 변동폭의 {P.base.gainVsRange}배와 {P.base.minGain * 100}% 중 큰 값 이상 상승(갭 포함), 거래량 20일 평균의 {P.base.minVolRatio}배 이상, 종가가 캔들 위쪽 {P.base.minClosePos * 100}% 이상, {P.base.highLookback}일 종가 신고가, 20·60일선이 꺾이지 않음, 직전까지 이평선이 벌어지지 않음.
+          최근 {P.leg.maxAge}봉 안에 다음을 모두 갖춘 캔들: 평소 변동폭의 {P.base.gainVsRange}배와 {P.base.minGain * 100}% 중 큰 값 이상 상승(갭 포함), 거래량 20일 평균의 {P.base.minVolRatio}배 이상, 종가가 캔들 위쪽 {P.base.minClosePos * 100}% 이상, 최근 {P.base.lineLookback}봉에서 시·고·저·종가가 {P.base.lineMinTouches}번 이상 닿은 수평 저항선을 종가로 돌파(바로 위에 더 강한 수평선이 붙어 있으면 제외), 20·60일선이 꺾이지 않음, 직전까지 이평선이 벌어지지 않음.
         </Rule>
         <Rule title="허리" refs={[LECTURES.b12, LECTURES.b23]}>
           상승 시작점부터 고점까지의 마디에서 {P.leg.waistZone[0] * 100}~{P.leg.waistZone[1] * 100}% 구간 중 시·종·고·저가 가장 많이 닿은 가격. 3번 미만이면 중간값.

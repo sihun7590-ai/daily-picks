@@ -11,7 +11,7 @@
 import type { LectureKey } from "./lectures";
 import type { Analysis, Bar, BaseInfo, Check, Levels, PlanLevel, RulePlan, ScoreItem, SetupId, Signal, Watch } from "./types";
 
-export const RULES_VERSION = 2;
+export const RULES_VERSION = 3;
 /** 시장 평균이 60일 평균 아래인 날은 신호를 내지 않는다. 2022~2024 검증에서 손실을 크게 줄였다. */
 export const USE_REGIME = true;
 /** 목표에서 절반 익절 후 나머지는 20일선 이탈까지 (초급 29·37화) */
@@ -24,6 +24,10 @@ export const P = {
      * 2022~2024 코스피에서 차이가 뚜렷했다: 고점 대비 95%+ 신호는 20일 뒤 시장 대비 +3.9%, 85% 미만은 -4.0%.
      */
     minVsHigh: 0.85,
+    /** false면 1년 고점 거리 조건을 쓰지 않는다. 강의에 숫자가 없는 조건이다 */
+    useHigh: false,
+    /** true면 강의(중급 13화) 대로 60>120 정배열과 60·120일선 우상향만 본다. false면 2판: 종가>60일선 포함 */
+    lectureMas: true,
   },
   /** 기준봉: 거래 터진 장대양봉으로 저항을 종가 돌파 (초급 11화) */
   base: {
@@ -36,13 +40,20 @@ export const P = {
     minClosePos: 0.6,
     /** 옆의 큰 산을 못 넘은 돌파는 의미 없다 (중급 19화) */
     highLookback: 60,
+    /** "line"이면 60일 신고가 대신 여러 번 닿은 수평선(기준가)을 종가로 돌파해야 한다 (초급 7·8·33화) */
+    resistance: "line" as "high60" | "line",
+    lineLookback: 120,
+    lineMinTouches: 3,
     /** 이평이 벌어진 채 터지면 마지막 트랩이 많다 (초급 11화) */
     maxPrevVsMa20: 1.15,
     maxMa20VsMa60: 1.2,
   },
   leg: {
-    /** 이보다 오래된 기준봉은 매매 구간이 끝난 것으로 본다 */
-    maxAge: 60,
+    /**
+     * 기준봉을 찾는 범위. 강의는 기간이 아니라 허리 유지로 마디의 생사를 본다(초급 12화).
+     * 3판부터 1년으로 넓히고, 끝나는 판단은 아래 pullbackState의 훼손 조건에 맡긴다
+     */
+    maxAge: 240,
     startLookback: 20,
     minGain: 0.08,
     minGainVsRange: 3,
@@ -75,6 +86,8 @@ export const P = {
     confirmNearSupport: 1.0,
     /** 평균 거래량에 못 미치는 첫 양봉은 신뢰할 수 없다 (초급 38화). 2022~2024에서 성적을 가장 많이 끌어올린 조건 */
     confirmMinVol: 1,
+    /** true면 돌파 신호 날 5일선이 고개를 들고 20일선이 꺾이지 않아야 한다 (초급 13화, 중급 13화) */
+    needMaUp: true,
   },
   risk: {
     /** 이보다 크면 매수 자리를 낮춰 기다린다 (중급 20화) */
@@ -171,8 +184,40 @@ function isBaseCandle(bars: Bar[], i: number, ind: Omit<Ctx, "bars" | "isBase">)
   if (ma20 <= prevMa20 || ma60 < earlyMa60) return false;
   if (bars[i - 1].c / prevMa20 > maxPrevVsMa20) return false;
   if (prevMa20 / prevMa60 > maxMa20VsMa60) return false;
+  if (P.base.resistance === "line") return breaksLine(bars, i, range);
   for (let k = i - highLookback; k < i; k++) if (bars[k].c >= b.c) return false;
   return true;
+}
+
+/** p 가격에 시가·고가·저가·종가 중 하나라도 닿은 봉 수 (초급 33화의 터치 세기) */
+function touchesAt(bars: Bar[], from: number, to: number, p: number, tol: number): number {
+  let n = 0;
+  for (let k = from; k <= to; k++) {
+    const b = bars[k];
+    if (Math.abs(b.o - p) <= tol || Math.abs(b.h - p) <= tol || Math.abs(b.l - p) <= tol || Math.abs(b.c - p) <= tol) n++;
+  }
+  return n;
+}
+
+/**
+ * 오늘 종가가 수평 저항선을 넘었는가. 저항선은 최근 구간에서 여러 번 닿은 가격이다 (초급 7·8·33화).
+ * 바로 위에 더 강한 수평선이 붙어 있으면 돌파로 보지 않는다 (초급 11화 "직전 강한 저항 근처 제외").
+ */
+function breaksLine(bars: Bar[], i: number, range: number): boolean {
+  const c = bars[i].c;
+  const prev = bars[i - 1].c;
+  const tol = Math.max(range * c * 0.5, c * 0.003);
+  const from = Math.max(0, i - P.base.lineLookback);
+  const to = i - 1;
+  let crossed = 0;
+  let above = 0;
+  for (let k = from; k <= to; k++) {
+    for (const p of [bars[k].o, bars[k].h, bars[k].l, bars[k].c]) {
+      if (p >= prev && p < c) crossed = Math.max(crossed, touchesAt(bars, from, to, p, tol));
+      else if (p > c && p <= c + tol * 3) above = Math.max(above, touchesAt(bars, from, to, p, tol));
+    }
+  }
+  return crossed >= P.base.lineMinTouches && above < P.base.lineMinTouches;
 }
 
 export function prepare(bars: Bar[]): Ctx {
@@ -279,8 +324,11 @@ function trendOk(ctx: Ctx, t: number): { ok: boolean; note: string | null } {
   if (ma60 == null || ma120 == null || prev120 == null) return { ok: false, note: "120일선 데이터 부족" };
   if (ma60 < ma120) return { ok: false, note: "60일선이 120일선 아래(역배열)" };
   if (ma120 < prev120) return { ok: false, note: "120일선이 아직 우하향" };
-  if (c < ma60) return { ok: false, note: "종가가 60일선 아래" };
-  if (c < yearHigh(ctx, t) * P.trend.minVsHigh) return { ok: false, note: "1년 고점과 멀어 위쪽 매물 부담" };
+  if (P.trend.lectureMas) {
+    const prev60 = ctx.ma60[t - 1];
+    if (prev60 == null || ma60 < prev60) return { ok: false, note: "60일선이 우하향" };
+  } else if (c < ma60) return { ok: false, note: "종가가 60일선 아래" };
+  if (P.trend.useHigh && c < yearHigh(ctx, t) * P.trend.minVsHigh) return { ok: false, note: "1년 고점과 멀어 위쪽 매물 부담" };
   return { ok: true, note: null };
 }
 
@@ -676,7 +724,7 @@ export function analyze(ctx: Ctx, t: number): Analysis {
 
   if (!leg) {
     if (isBase[t]) return firstBase(ctx, t);
-    return none("no_leg", "최근 60봉에 기준봉 없음");
+    return none("no_leg", `최근 ${P.leg.maxAge}봉에 기준봉 없음`);
   }
   if (firstBaseToday) return firstBase(ctx, t);
 
@@ -753,6 +801,13 @@ export function analyze(ctx: Ctx, t: number): Analysis {
     dried;
 
   const triggered = peakBreak || boxBreak || confirm;
+  // 눌림 첫 양봉은 5일선이 돌기 전에 나오는 예측 매매라 제외한다 (초급 39화)
+  if ((peakBreak || boxBreak) && P.trigger.needMaUp) {
+    const m5 = ctx.ma5[t];
+    const p5 = ctx.ma5[t - 1];
+    const p20 = ma20[t - 1];
+    if (m5 == null || p5 == null || m5 <= p5 || ma20[t] == null || p20 == null || ma20[t]! < p20) return none("risk", "5일선이 고개를 들지 않았거나 20일선이 꺾임");
+  }
   if (triggered) {
     if (climax) return none("risk", "최근 고점 대량거래");
     if (failures > P.risk.maxFailedBreakouts) return none("risk", "돌파 실패 2회 이상(박스)");
@@ -828,8 +883,8 @@ export function positionChecks(ctx: Ctx, t: number): { checks: Check[]; levels: 
     line("ma20", "20일선", ctx.ma20[t]),
     line("ma60", "60일선", ma60),
     align,
-    { key: "high", label: "1년 고점", ok: c >= high * P.trend.minVsHigh, detail: `고점보다 ${((1 - c / high) * 100).toFixed(1)}% 아래` },
-    leg ? { ...line("waist", "기준 마디 허리", leg.waist), detail: `종가가 ${gap(leg.waist)} (기준봉 ${leg.info.date})` } : { key: "waist", label: "기준 마디 허리", ok: null, detail: "최근 60봉에 기준봉 없음" },
+    { key: "high", label: "1년 고점", ok: P.trend.useHigh ? c >= high * P.trend.minVsHigh : null, detail: `고점보다 ${((1 - c / high) * 100).toFixed(1)}% 아래` },
+    leg ? { ...line("waist", "기준 마디 허리", leg.waist), detail: `종가가 ${gap(leg.waist)} (기준봉 ${leg.info.date})` } : { key: "waist", label: "기준 마디 허리", ok: null, detail: `최근 ${P.leg.maxAge}봉에 기준봉 없음` },
     { key: "climax", label: "고점 대량거래", ok: !climax, detail: `최근 ${P.climax.lookback}봉 안에 ${climax ? "있음" : "없음"}` },
   ];
   return { checks, levels: leg ? levelsOf(leg, null) : null, baseDate: leg?.info.date ?? null };
@@ -884,7 +939,7 @@ function entryWhy(a: Analysis): Why {
   if (w) return { why: `돌파 가격을 정할 수 없습니다. ${w.note}`, refs: ["m5"] };
   if (a.stage === "history") return { why: "거래 일수가 부족해 이평선과 기준 마디를 판단할 수 없습니다.", refs: ["b36"] };
   if (a.stage === "trend") return { why: `추세 조건에서 탈락했습니다(${a.note}). 규칙은 상승 추세에서만 진입합니다.`, refs: ["m13", "b28"] };
-  if (a.stage === "no_leg") return { why: "최근 60봉에 기준봉이 없습니다. 규칙은 거래량이 터진 기준봉이 나온 뒤에만 진입합니다.", refs: ["b11", "b36"] };
+  if (a.stage === "no_leg") return { why: `최근 ${P.leg.maxAge}봉에 기준봉이 없습니다. 규칙은 거래량이 터진 기준봉이 나온 뒤에만 진입합니다.`, refs: ["b11", "b36"] };
   if (a.stage === "leg_broken") return { why: `기준 마디가 망가졌습니다(${a.note}).`, refs: ["b12", "m7"] };
   if (a.stage === "risk") return { why: `오늘 신호가 규칙에서 보류됐습니다(${a.note}).`, refs: ["b10", "m6"] };
   return { why: "기준 마디는 있지만 종가가 허리 아래이거나 오늘 진입 신호가 없습니다.", refs: ["b36"] };

@@ -10,6 +10,7 @@ export const LECTURES = {
   b10: L("초급 10화", "고점 대량거래", "aX37l8vLwns"),
   b11: L("초급 11화", "기준봉", "A4fhqVhlV1Q"),
   b12: L("초급 12화", "기준 마디", "dTGsswbakyU"),
+  b14: L("초급 14화", "이동평균선 교차", "B_Yyk0ciwTA"),
   b17: L("초급 17화", "눌림목 매매의 정석", "_gMl9wQx_aI"),
   b18: L("초급 18화", "돌파 매매의 정석", "Y-smtMLJ33E"),
   b23: L("초급 23화", "허리 찾기", "Yyb85UrGF4c"),
