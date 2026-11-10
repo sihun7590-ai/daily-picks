@@ -1,0 +1,168 @@
+{
+ "rulesVersion": 3,
+ "generatedAt": "2026-11-10T15:43:50.122Z",
+ "kospi": {
+  "asOf": "2026-11-09",
+  "regimeUp": false,
+  "funnel": {
+   "illiquid": 561,
+   "trend": 216,
+   "leg_broken": 8,
+   "no_leg": 8,
+   "no_trigger": 9,
+   "stale": 25,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_forming",
+    "trigger": 99800,
+    "stop": 95700
+   },
+   {
+    "code": "068270",
+    "name": "셀트리온",
+    "id": "pullback_forming",
+    "trigger": 215000,
+    "stop": 203500
+   },
+   {
+    "code": "001450",
+    "name": "현대해상",
+    "id": "pullback_forming",
+    "trigger": 42500,
+    "stop": 40100
+   },
+   {
+    "code": "180640",
+    "name": "한진칼",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "089860",
+    "name": "롯데렌탈",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "089590",
+    "name": "제주항공",
+    "id": "pullback_weak",
+    "trigger": null,
+    "stop": 6010
+   },
+   {
+    "code": "008930",
+    "name": "한미사이언스",
+    "id": "pullback_weak",
+    "trigger": 63800,
+    "stop": 40050
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-09",
+  "regimeUp": true,
+  "funnel": {
+   "no_trigger": 42,
+   "no_leg": 88,
+   "leg_broken": 22,
+   "trend": 347,
+   "history": 3,
+   "risk": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "CRM",
+    "name": "Salesforce",
+    "id": "pullback_forming",
+    "trigger": 218.77,
+    "stop": 211
+   },
+   {
+    "code": "GPN",
+    "name": "Global Payments",
+    "id": "pullback_forming",
+    "trigger": 99.97,
+    "stop": 93.29
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 373.34,
+    "stop": 355.63
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "pullback_forming",
+    "trigger": 191.53,
+    "stop": 183.9
+   },
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "pullback_forming",
+    "trigger": 122.64,
+    "stop": 117.13
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "pullback_forming",
+    "trigger": 480.95,
+    "stop": 465.95
+   },
+   {
+    "code": "NDAQ",
+    "name": "Nasdaq, Inc.",
+    "id": "pullback_forming",
+    "trigger": 109.28,
+    "stop": 105
+   },
+   {
+    "code": "ZBH",
+    "name": "Zimmer Biomet",
+    "id": "pullback_forming",
+    "trigger": 112.55,
+    "stop": 103.21
+   },
+   {
+    "code": "MRNA",
+    "name": "Moderna",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "ADSK",
+    "name": "Autodesk",
+    "id": "pullback_weak",
+    "trigger": 265.81,
+    "stop": 258.61
+   },
+   {
+    "code": "HCA",
+    "name": "HCA Healthcare",
+    "id": "pullback_weak",
+    "trigger": 507.28,
+    "stop": 491.33
+   },
+   {
+    "code": "MMM",
+    "name": "3M",
+    "id": "pullback_weak",
+    "trigger": 190.57,
+    "stop": 183.59
+   }
+  ]
+ }
+}
