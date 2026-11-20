@@ -1,0 +1,174 @@
+{
+ "rulesVersion": 3,
+ "generatedAt": "2026-11-20T16:18:40.419Z",
+ "kospi": {
+  "asOf": "2026-11-19",
+  "regimeUp": false,
+  "funnel": {
+   "illiquid": 577,
+   "trend": 195,
+   "stale": 24,
+   "no_trigger": 11,
+   "no_leg": 9,
+   "leg_broken": 10,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "294870",
+    "name": "IPARK현대산업개발",
+    "id": "pullback_forming",
+    "trigger": 25600,
+    "stop": 23400
+   },
+   {
+    "code": "192820",
+    "name": "코스맥스",
+    "id": "pullback_forming",
+    "trigger": 313000,
+    "stop": 278500
+   },
+   {
+    "code": "010640",
+    "name": "진양폴리우레탄",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "068270",
+    "name": "셀트리온",
+    "id": "pullback_weak",
+    "trigger": 216500,
+    "stop": 206500
+   },
+   {
+    "code": "002320",
+    "name": "한진",
+    "id": "pullback_weak",
+    "trigger": 19240,
+    "stop": 17310
+   },
+   {
+    "code": "272450",
+    "name": "진에어",
+    "id": "pullback_weak",
+    "trigger": 8550,
+    "stop": 7210
+   },
+   {
+    "code": "003490",
+    "name": "대한항공",
+    "id": "pullback_weak",
+    "trigger": 32800,
+    "stop": 30700
+   },
+   {
+    "code": "089590",
+    "name": "제주항공",
+    "id": "pullback_weak",
+    "trigger": null,
+    "stop": 6610
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-19",
+  "regimeUp": false,
+  "funnel": {
+   "no_leg": 71,
+   "trend": 379,
+   "leg_broken": 12,
+   "no_trigger": 38,
+   "history": 3
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "pullback_forming",
+    "trigger": 188.49,
+    "stop": 184
+   },
+   {
+    "code": "ZBH",
+    "name": "Zimmer Biomet",
+    "id": "pullback_forming",
+    "trigger": 104.28,
+    "stop": 99.7
+   },
+   {
+    "code": "COR",
+    "name": "Cencora",
+    "id": "pullback_forming",
+    "trigger": 349.84,
+    "stop": 337.11
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "pullback_forming",
+    "trigger": 480.23,
+    "stop": 462.86
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 374.17,
+    "stop": 363
+   },
+   {
+    "code": "NDAQ",
+    "name": "Nasdaq, Inc.",
+    "id": "pullback_forming",
+    "trigger": 106.9,
+    "stop": 103.85
+   },
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "pullback_forming",
+    "trigger": 119.66,
+    "stop": 114.61
+   },
+   {
+    "code": "BIIB",
+    "name": "Biogen",
+    "id": "pullback_forming",
+    "trigger": 255.42,
+    "stop": 243.58
+   },
+   {
+    "code": "CVX",
+    "name": "Chevron Corporation",
+    "id": "pullback_forming",
+    "trigger": 213.58,
+    "stop": 205.57
+   },
+   {
+    "code": "MCK",
+    "name": "McKesson",
+    "id": "pullback_forming",
+    "trigger": 1121.5,
+    "stop": 1042.86
+   },
+   {
+    "code": "CPAY",
+    "name": "Corpay",
+    "id": "pullback_forming",
+    "trigger": 479.53,
+    "stop": 427.97
+   },
+   {
+    "code": "TGT",
+    "name": "Target Corporation",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}
