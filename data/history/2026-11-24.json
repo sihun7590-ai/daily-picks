@@ -1,0 +1,182 @@
+{
+ "rulesVersion": 3,
+ "generatedAt": "2026-11-23T19:24:58.556Z",
+ "kospi": {
+  "asOf": "2026-11-20",
+  "regimeUp": false,
+  "funnel": {
+   "illiquid": 578,
+   "trend": 200,
+   "stale": 25,
+   "no_trigger": 10,
+   "no_leg": 6,
+   "leg_broken": 7,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "272450",
+    "name": "진에어",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "089590",
+    "name": "제주항공",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "089860",
+    "name": "롯데렌탈",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "003490",
+    "name": "대한항공",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "068270",
+    "name": "셀트리온",
+    "id": "pullback_weak",
+    "trigger": 216500,
+    "stop": 206500
+   },
+   {
+    "code": "002320",
+    "name": "한진",
+    "id": "pullback_weak",
+    "trigger": 19700,
+    "stop": 17310
+   },
+   {
+    "code": "010640",
+    "name": "진양폴리우레탄",
+    "id": "pullback_weak",
+    "trigger": 4375,
+    "stop": 3750
+   },
+   {
+    "code": "294870",
+    "name": "IPARK현대산업개발",
+    "id": "pullback_weak",
+    "trigger": 25600,
+    "stop": 23750
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-20",
+  "regimeUp": false,
+  "funnel": {
+   "no_leg": 67,
+   "trend": 388,
+   "leg_broken": 8,
+   "no_trigger": 36,
+   "history": 3,
+   "stale": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "ZBH",
+    "name": "Zimmer Biomet",
+    "id": "pullback_forming",
+    "trigger": 104.28,
+    "stop": 99.7
+   },
+   {
+    "code": "COR",
+    "name": "Cencora",
+    "id": "pullback_forming",
+    "trigger": 349.84,
+    "stop": 337.11
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "pullback_forming",
+    "trigger": 189.68,
+    "stop": 183.26
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 374.17,
+    "stop": 363
+   },
+   {
+    "code": "CAH",
+    "name": "Cardinal Health",
+    "id": "pullback_forming",
+    "trigger": 280.21,
+    "stop": 271.27
+   },
+   {
+    "code": "HAS",
+    "name": "Hasbro",
+    "id": "pullback_forming",
+    "trigger": 124.62,
+    "stop": 112.09
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "pullback_weak",
+    "trigger": 476.75,
+    "stop": 458.83
+   },
+   {
+    "code": "IDXX",
+    "name": "Idexx Laboratories",
+    "id": "pullback_weak",
+    "trigger": 713.11,
+    "stop": 672.72
+   },
+   {
+    "code": "MCK",
+    "name": "McKesson",
+    "id": "pullback_weak",
+    "trigger": 1088.14,
+    "stop": 1042.86
+   },
+   {
+    "code": "SWK",
+    "name": "Stanley Black & Decker",
+    "id": "pullback_weak",
+    "trigger": 112.18,
+    "stop": 105.52
+   },
+   {
+    "code": "DLTR",
+    "name": "Dollar Tree",
+    "id": "pullback_weak",
+    "trigger": 143.25,
+    "stop": 135.01
+   },
+   {
+    "code": "AIZ",
+    "name": "Assurant",
+    "id": "pullback_weak",
+    "trigger": 323.27,
+    "stop": 313.74
+   }
+  ]
+ }
+}
