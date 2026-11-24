@@ -1,0 +1,187 @@
+{
+ "rulesVersion": 3,
+ "generatedAt": "2026-11-24T19:00:40.380Z",
+ "kospi": {
+  "asOf": "2026-11-23",
+  "regimeUp": false,
+  "funnel": {
+   "illiquid": 573,
+   "trend": 203,
+   "no_trigger": 12,
+   "stale": 27,
+   "no_leg": 5,
+   "leg_broken": 6,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_forming",
+    "trigger": 107300,
+    "stop": 102900
+   },
+   {
+    "code": "180640",
+    "name": "한진칼",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "089860",
+    "name": "롯데렌탈",
+    "id": "pullback_weak",
+    "trigger": 58700,
+    "stop": 58500
+   },
+   {
+    "code": "002320",
+    "name": "한진",
+    "id": "pullback_weak",
+    "trigger": 19700,
+    "stop": 17310
+   },
+   {
+    "code": "010640",
+    "name": "진양폴리우레탄",
+    "id": "pullback_weak",
+    "trigger": 4375,
+    "stop": 3635
+   },
+   {
+    "code": "272450",
+    "name": "진에어",
+    "id": "pullback_weak",
+    "trigger": 8600,
+    "stop": 7060
+   },
+   {
+    "code": "000500",
+    "name": "가온전선",
+    "id": "pullback_weak",
+    "trigger": 226500,
+    "stop": 198500
+   },
+   {
+    "code": "068270",
+    "name": "셀트리온",
+    "id": "pullback_weak",
+    "trigger": 219000,
+    "stop": 199000
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-23",
+  "regimeUp": false,
+  "funnel": {
+   "no_leg": 73,
+   "trend": 377,
+   "leg_broken": 10,
+   "no_trigger": 38,
+   "pass": 1,
+   "history": 3,
+   "stale": 1
+  },
+  "signals": [
+   {
+    "code": "DE",
+    "name": "Deere & Company",
+    "setup": "trap_reclaim",
+    "entry": 633.03,
+    "stop": 605.34,
+    "target": 692.69,
+    "score": 46,
+    "held": true
+   }
+  ],
+  "watch": [
+   {
+    "code": "ZBH",
+    "name": "Zimmer Biomet",
+    "id": "pullback_forming",
+    "trigger": 106.2,
+    "stop": 100.52
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "pullback_forming",
+    "trigger": 190.12,
+    "stop": 183.26
+   },
+   {
+    "code": "HCA",
+    "name": "HCA Healthcare",
+    "id": "pullback_forming",
+    "trigger": 485.1,
+    "stop": 463.5
+   },
+   {
+    "code": "COR",
+    "name": "Cencora",
+    "id": "pullback_forming",
+    "trigger": 349.84,
+    "stop": 337.11
+   },
+   {
+    "code": "LH",
+    "name": "Labcorp",
+    "id": "pullback_forming",
+    "trigger": 374.57,
+    "stop": 363
+   },
+   {
+    "code": "CPAY",
+    "name": "Corpay",
+    "id": "pullback_forming",
+    "trigger": 444.1,
+    "stop": 428.8
+   },
+   {
+    "code": "DIS",
+    "name": "Walt Disney Company (The)",
+    "id": "pullback_forming",
+    "trigger": 122.3,
+    "stop": 117.46
+   },
+   {
+    "code": "MCK",
+    "name": "McKesson",
+    "id": "pullback_forming",
+    "trigger": 1088.14,
+    "stop": 1042.86
+   },
+   {
+    "code": "CAH",
+    "name": "Cardinal Health",
+    "id": "pullback_forming",
+    "trigger": 280.21,
+    "stop": 270.46
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "pullback_forming",
+    "trigger": 507.24,
+    "stop": 453.72
+   },
+   {
+    "code": "MMM",
+    "name": "3M",
+    "id": "pullback_weak",
+    "trigger": 184.93,
+    "stop": 177.72
+   },
+   {
+    "code": "SWK",
+    "name": "Stanley Black & Decker",
+    "id": "pullback_weak",
+    "trigger": 112.18,
+    "stop": 105.52
+   }
+  ]
+ }
+}
