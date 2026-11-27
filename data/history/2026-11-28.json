@@ -1,0 +1,183 @@
+{
+ "rulesVersion": 3,
+ "generatedAt": "2026-11-27T17:36:10.208Z",
+ "kospi": {
+  "asOf": "2026-11-26",
+  "regimeUp": false,
+  "funnel": {
+   "illiquid": 583,
+   "trend": 194,
+   "stale": 26,
+   "no_trigger": 12,
+   "leg_broken": 6,
+   "no_leg": 5,
+   "history": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "294870",
+    "name": "IPARK현대산업개발",
+    "id": "pullback_forming",
+    "trigger": 24000,
+    "stop": 22900
+   },
+   {
+    "code": "012750",
+    "name": "에스원",
+    "id": "pullback_forming",
+    "trigger": 105000,
+    "stop": 100000
+   },
+   {
+    "code": "180640",
+    "name": "한진칼",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "192820",
+    "name": "코스맥스",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "068270",
+    "name": "셀트리온",
+    "id": "pullback_weak",
+    "trigger": 219000,
+    "stop": 211000
+   },
+   {
+    "code": "089860",
+    "name": "롯데렌탈",
+    "id": "pullback_weak",
+    "trigger": 58700,
+    "stop": 58500
+   },
+   {
+    "code": "010640",
+    "name": "진양폴리우레탄",
+    "id": "pullback_weak",
+    "trigger": 4570,
+    "stop": 4055
+   },
+   {
+    "code": "272450",
+    "name": "진에어",
+    "id": "pullback_weak",
+    "trigger": 8100,
+    "stop": 7060
+   },
+   {
+    "code": "002320",
+    "name": "한진",
+    "id": "pullback_weak",
+    "trigger": 21600,
+    "stop": 18900
+   }
+  ]
+ },
+ "sp500": {
+  "asOf": "2026-11-25",
+  "regimeUp": true,
+  "funnel": {
+   "no_leg": 81,
+   "trend": 360,
+   "leg_broken": 18,
+   "no_trigger": 39,
+   "risk": 1,
+   "history": 3,
+   "stale": 1
+  },
+  "signals": [],
+  "watch": [
+   {
+    "code": "ZBH",
+    "name": "Zimmer Biomet",
+    "id": "pullback_forming",
+    "trigger": 110.52,
+    "stop": 104.99
+   },
+   {
+    "code": "HCA",
+    "name": "HCA Healthcare",
+    "id": "pullback_forming",
+    "trigger": 492.9,
+    "stop": 472.24
+   },
+   {
+    "code": "ALLE",
+    "name": "Allegion",
+    "id": "pullback_forming",
+    "trigger": 193.71,
+    "stop": 187.11
+   },
+   {
+    "code": "NDAQ",
+    "name": "Nasdaq, Inc.",
+    "id": "pullback_forming",
+    "trigger": 107.43,
+    "stop": 104.5
+   },
+   {
+    "code": "MCK",
+    "name": "McKesson",
+    "id": "pullback_forming",
+    "trigger": 1088.14,
+    "stop": 1042.86
+   },
+   {
+    "code": "COR",
+    "name": "Cencora",
+    "id": "pullback_forming",
+    "trigger": 363.95,
+    "stop": 332.67
+   },
+   {
+    "code": "CPAY",
+    "name": "Corpay",
+    "id": "pullback_forming",
+    "trigger": 455.83,
+    "stop": 432.35
+   },
+   {
+    "code": "ROP",
+    "name": "Roper Technologies",
+    "id": "pullback_forming",
+    "trigger": 507.24,
+    "stop": 453.72
+   },
+   {
+    "code": "CAH",
+    "name": "Cardinal Health",
+    "id": "pullback_forming",
+    "trigger": 286.29,
+    "stop": 263.92
+   },
+   {
+    "code": "BIIB",
+    "name": "Biogen",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "DGX",
+    "name": "Quest Diagnostics",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   },
+   {
+    "code": "TGT",
+    "name": "Target Corporation",
+    "id": "rising",
+    "trigger": null,
+    "stop": null
+   }
+  ]
+ }
+}
